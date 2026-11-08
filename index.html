@@ -22,7 +22,7 @@
     body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
     #auth-screen {
-      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px);
       display: flex; align-items: center; justify-content: center; z-index: 1000;
     }
     .auth-card {
@@ -30,13 +30,20 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
     .auth-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; color: var(--text); }
-    .auth-card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 24px; }
-    .google-btn {
-      width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 12px; background: #fff;
-      font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 10px;
-      cursor: pointer; transition: 0.2s;
+    .auth-card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 20px; }
+    .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+    .auth-tab { flex: 1; padding: 10px; font-weight: 700; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .form-group { margin-bottom: 12px; text-align: left; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--muted); }
+    .form-control {
+      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem;
     }
-    .google-btn:hover { background: #f8fafc; border-color: var(--primary); }
+    .auth-submit {
+      width: 100%; padding: 11px; background: var(--primary); color: #fff;
+      border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 10px;
+    }
 
     .sidebar {
       width: 240px; background: var(--sidebar-bg); color: #fff;
@@ -118,11 +125,6 @@
       border-radius: 8px; font-size: 0.80rem; font-weight: 600; cursor: pointer;
     }
 
-    .form-group { margin-bottom: 12px; }
-    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--muted); }
-    .form-control {
-      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem;
-    }
     .withdraw-submit {
       width: 100%; padding: 11px; background: var(--green); color: #fff;
       border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 6px;
@@ -155,11 +157,37 @@
 
   <div id="auth-screen">
     <div class="auth-card">
-      <h2>TaskMint Login</h2>
-      <p>Secure login with your verified Google account to start earning real rewards.</p>
-      <button class="google-btn" onclick="loginWithGoogle()">
-        <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.2rem;"></i> Continue with Google
-      </button>
+      <h2>TaskMint Portal</h2>
+      <p>Login with your credentials or create a new account.</p>
+      
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
+        <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Register</div>
+      </div>
+
+      <div id="formLogin">
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="mf3767189@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPass" class="form-control" placeholder="******" />
+        </div>
+        <button class="auth-submit" onclick="handleLogin()">Login to Account</button>
+      </div>
+
+      <div id="formSignup" style="display: none;">
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" id="signupEmail" class="form-control" placeholder="yourgmail@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Create Password</label>
+          <input type="password" id="signupPass" class="form-control" placeholder="******" />
+        </div>
+        <button class="auth-submit" onclick="handleSignup()" style="background: var(--green);">Create Account</button>
+      </div>
     </div>
   </div>
 
@@ -204,7 +232,7 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon ic-purple"><i class="fa-solid fa-wallet"></i></div>
-          <div class="stat-info"><span>Current Balance</span><h3><span id="bal">0</span> PKR</h3></div>
+          <div class="stat-info"><span>Current Balance</span><h3>$<span id="bal">0.00</span></h3></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div>
@@ -216,7 +244,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-icon ic-amber"><i class="fa-solid fa-sack-dollar"></i></div>
-          <div class="stat-info"><span>Min Withdrawal</span><h3>1000 PKR</h3></div>
+          <div class="stat-info"><span>Min Withdrawal</span><h3>$5.00</h3></div>
         </div>
       </div>
 
@@ -233,30 +261,52 @@
     <div id="offerwall" class="page-section">
       <div class="card">
         <div class="card-header"><h3>Bitcotasks Live Offerwall</h3></div>
-        <iframe style="width:100%; height:700px; border:none; border-radius:12px;" scrolling="yes" frameborder="0" src="https://bitcotasks.com/offerwall/zkt6xa29u366inmpko8sig7hxwg87o/mf3767189"></iframe>
+        <iframe id="offerwallFrame" style="width:100%; height:700px; border:none; border-radius:12px;" scrolling="yes" frameborder="0" src=""></iframe>
       </div>
     </div>
 
     <div id="withdraw" class="page-section">
       <div class="card">
-        <div class="card-header"><h3>Request Withdrawal (Minimum 1000 PKR / $5)</h3></div>
+        <div class="card-header"><h3>Request Withdrawal (Minimum $5)</h3></div>
         <div class="form-group">
           <label>Select Payment Method</label>
-          <select id="wMethod" class="form-control">
+          <select id="wMethod" class="form-control" onchange="updateWithdrawFields()">
             <option value="EasyPaisa">EasyPaisa</option>
             <option value="JazzCash">JazzCash</option>
-            <option value="Binance">Binance (USDT / Pay ID)</option>
+            <option value="Binance">Binance</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Account Number / Wallet ID / Binance Email</label>
-          <input type="text" id="wAcc" class="form-control" placeholder="e.g. 03176776279 or binance@email.com" />
+          <label id="lblField1">Account Name</label>
+          <input type="text" id="wField1" class="form-control" placeholder="e.g. Muhammad Faisal" />
         </div>
         <div class="form-group">
-          <label>Amount in PKR (Min 1000)</label>
-          <input type="number" id="wAmount" class="form-control" placeholder="1000" />
+          <label id="lblField2">Account Number</label>
+          <input type="text" id="wField2" class="form-control" placeholder="e.g. 03176776279" />
+        </div>
+        <div class="form-group">
+          <label>Amount in USD ($) (Min $5)</label>
+          <input type="number" step="0.01" id="wAmount" class="form-control" placeholder="5.00" />
         </div>
         <button class="withdraw-submit" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+      </div>
+
+      <!-- Withdrawal History Card -->
+      <div class="card">
+        <div class="card-header"><h3>Your Withdrawal History</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Details</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="userWithdrawHistory"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -291,7 +341,7 @@
             <thead>
               <tr>
                 <th>User Email</th>
-                <th>Balance (PKR)</th>
+                <th>Balance ($)</th>
                 <th>Tasks Completed</th>
               </tr>
             </thead>
@@ -308,7 +358,8 @@
               <tr>
                 <th>Email</th>
                 <th>Method</th>
-                <th>Account</th>
+                <th>Account / Nickname</th>
+                <th>Number / ID</th>
                 <th>Amount</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -324,10 +375,15 @@
         <div id="adminSupportInbox"></div>
       </div>
     </div>
-  </main>
-    <script>
-    let currentUser = JSON.parse(localStorage.getItem('taskmint_user')) || null;
+                                            </main>
+          <script>
     let allUsers = JSON.parse(localStorage.getItem('taskmint_all_users')) || {};
+    if (!allUsers["mf3767189@gmail.com"]) {
+      allUsers["mf3767189@gmail.com"] = { email: "mf3767189@gmail.com", pass: "112211", balance: 0, tasks: 0 };
+      localStorage.setItem('taskmint_all_users', JSON.stringify(allUsers));
+    }
+
+    let currentUser = JSON.parse(localStorage.getItem('taskmint_user')) || null;
     let withdrawRequests = JSON.parse(localStorage.getItem('taskmint_withdraws')) || [];
     let supportMessages = JSON.parse(localStorage.getItem('taskmint_support')) || [];
     let broadcastMsg = localStorage.getItem('taskmint_broadcast') || "Welcome to TaskMint! Complete offers and earn real cash.";
@@ -339,41 +395,94 @@
       initUserSession();
     }
 
-    function loginWithGoogle() {
-      let email = prompt("Enter your Gmail address to continue:", "mf3767189@gmail.com");
-      if (!email || !email.includes('@')) {
-        alert("Valid email required!");
+    function switchAuthTab(tab) {
+      if (tab === 'login') {
+        document.getElementById('tabLogin').classList.add('active');
+        document.getElementById('tabSignup').classList.remove('active');
+        document.getElementById('formLogin').style.display = 'block';
+        document.getElementById('formSignup').style.display = 'none';
+      } else {
+        document.getElementById('tabSignup').classList.add('active');
+        document.getElementById('tabLogin').classList.remove('active');
+        document.getElementById('formSignup').style.display = 'block';
+        document.getElementById('formLogin').style.display = 'none';
+      }
+    }
+
+    function handleLogin() {
+      let email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      let pass = document.getElementById('loginPass').value.trim();
+
+      if (!allUsers[email] || allUsers[email].pass !== pass) {
+        alert("Invalid Gmail or Password!");
         return;
       }
-      email = email.trim().toLowerCase();
 
-      currentUser = { email: email, balance: 0, tasks: 0 };
-      if (!allUsers[email]) {
-        allUsers[email] = currentUser;
-      } else {
-        currentUser = allUsers[email];
-      }
+      currentUser = allUsers[email];
       localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+      document.getElementById('auth-screen').style.display = 'none';
+      initUserSession();
+    }
+
+    function handleSignup() {
+      let email = document.getElementById('signupEmail').value.trim().toLowerCase();
+      let pass = document.getElementById('signupPass').value.trim();
+
+      if (!email || !email.includes('@') || !pass) {
+        alert("Please enter a valid Gmail and password.");
+        return;
+      }
+      if (allUsers[email]) {
+        alert("Account already exists with this Gmail! Please login.");
+        switchAuthTab('login');
+        return;
+      }
+
+      currentUser = { email: email, pass: pass, balance: 0, tasks: 0 };
+      allUsers[email] = currentUser;
       localStorage.setItem('taskmint_all_users', JSON.stringify(allUsers));
+      localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
       document.getElementById('auth-screen').style.display = 'none';
       initUserSession();
     }
 
+    function updateWithdrawFields() {
+      let method = document.getElementById('wMethod').value;
+      if (method === 'Binance') {
+        document.getElementById('lblField1').innerText = "Binance Nickname";
+        document.getElementById('wField1').placeholder = "e.g. CryptoKing";
+        document.getElementById('lblField2').innerText = "Binance ID / Pay ID";
+        document.getElementById('wField2').placeholder = "e.g. 123456789";
+      } else {
+        document.getElementById('lblField1').innerText = "Account Name";
+        document.getElementById('wField1').placeholder = "e.g. Muhammad Faisal";
+        document.getElementById('lblField2').innerText = "Account Number";
+        document.getElementById('wField2').placeholder = "e.g. 03176776279";
+      }
+    }
+
     function initUserSession() {
       document.getElementById('welcomeMsg').innerText = `Welcome, ${currentUser.email}! 👋`;
       document.getElementById('userAvatar').innerText = currentUser.email.substring(0,2).toUpperCase();
-      document.getElementById('bal').innerText = currentUser.balance;
+      document.getElementById('bal').innerText = Number(currentUser.balance).toFixed(2);
       document.getElementById('doneCount').innerText = currentUser.tasks;
       document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.email}`;
 
+      let safeSubId = currentUser.email.replace(/[^a-zA-Z0-9_]/g, '_');
+      document.getElementById('offerwallFrame').src = `https://bitcotasks.com/offerwall/zkt6xa29u366inmpko8sig7hxwg87o/${safeSubId}`;
+
       if (currentUser.email === "mf3767189@gmail.com") {
-        let adminNav = document.createElement('li');
-        adminNav.innerHTML = `<a onclick="showPage('admin-panel', this)"><i class="fa-solid fa-gauge-high"></i> Admin Panel</a>`;
-        document.getElementById('navLinks').appendChild(adminNav);
+        if (!document.getElementById('adminNavLink')) {
+          let adminNav = document.createElement('li');
+          adminNav.id = 'adminNavLink';
+          adminNav.innerHTML = `<a onclick="showPage('admin-panel', this)"><i class="fa-solid fa-gauge-high"></i> Admin Panel</a>`;
+          document.getElementById('navLinks').appendChild(adminNav);
+        }
         renderAdminPanel();
       }
       renderSupportHistory();
+      renderUserWithdrawHistory();
     }
 
     function logout() {
@@ -403,15 +512,16 @@
 
     function submitWithdrawal() {
       let method = document.getElementById('wMethod').value;
-      let acc = document.getElementById('wAcc').value;
-      let amount = parseInt(document.getElementById('wAmount').value);
+      let field1 = document.getElementById('wField1').value.trim();
+      let field2 = document.getElementById('wField2').value.trim();
+      let amount = parseFloat(document.getElementById('wAmount').value);
 
-      if (!acc || isNaN(amount)) {
+      if (!field1 || !field2 || isNaN(amount)) {
         alert("Please fill all details correctly.");
         return;
       }
-      if (amount < 1000) {
-        alert("Minimum withdrawal is 1000 PKR ($5).");
+      if (amount < 5) {
+        alert("Minimum withdrawal is $5.");
         return;
       }
       if (currentUser.balance < amount) {
@@ -422,14 +532,33 @@
       currentUser.balance -= amount;
       updateUserData();
 
-      let req = { id: Date.now(), email: currentUser.email, method, acc, amount, status: 'Pending' };
+      let req = { id: Date.now(), email: currentUser.email, method, field1, field2, amount: amount.toFixed(2), status: 'Pending' };
       withdrawRequests.push(req);
       localStorage.setItem('taskmint_withdraws', JSON.stringify(withdrawRequests));
 
-      alert("Withdrawal request submitted successfully! Admin will review and approve.");
-      document.getElementById('wAcc').value = '';
+      alert("Withdrawal request submitted successfully!");
+      document.getElementById('wField1').value = '';
+      document.getElementById('wField2').value = '';
       document.getElementById('wAmount').value = '';
       initUserSession();
+    }
+
+    function renderUserWithdrawHistory() {
+      let html = '';
+      let userReqs = withdrawRequests.filter(r => r.email === currentUser.email);
+      if (userReqs.length === 0) {
+        html = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No withdrawal history yet</td></tr>`;
+      } else {
+        userReqs.forEach(r => {
+          html += `<tr>
+            <td>${r.method}</td>
+            <td>${r.field1} (${r.field2})</td>
+            <td style="color:var(--red); font-weight:700;">-$${r.amount}</td>
+            <td><span class="badge-${r.status.toLowerCase()}">${r.status}</span></td>
+          </tr>`;
+        });
+      }
+      document.getElementById('userWithdrawHistory').innerHTML = html;
     }
 
     function sendSupportMessage() {
@@ -464,7 +593,7 @@
       let uHtml = '';
       for (let email in allUsers) {
         let u = allUsers[email];
-        uHtml += `<tr><td>${u.email}</td><td>${u.balance} PKR</td><td>${u.tasks}</td></tr>`;
+        uHtml += `<tr><td>${u.email}</td><td>$${Number(u.balance).toFixed(2)}</td><td>${u.tasks}</td></tr>`;
       }
       document.getElementById('adminUsersTable').innerHTML = uHtml;
 
@@ -473,8 +602,9 @@
         wHtml += `<tr>
           <td>${req.email}</td>
           <td>${req.method}</td>
-          <td>${req.acc}</td>
-          <td>${req.amount} PKR</td>
+          <td>${req.field1}</td>
+          <td>${req.field2}</td>
+          <td style="color:var(--red); font-weight:700;">-$${req.amount}</td>
           <td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td>
           <td>
             ${req.status === 'Pending' ? `

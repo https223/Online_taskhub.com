@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TaskMint — Dashboard</title>
+  <title>TaskMint — Professional Earning Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     :root {
@@ -15,12 +15,29 @@
       --muted: #64748b;
       --primary: #5b46f6;
       --green: #10b981;
+      --red: #ef4444;
       --border: #e2e8f0;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
     body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
-    /* Sidebar */
+    #auth-screen {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .auth-card {
+      background: #fff; padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .auth-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+    .auth-card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 24px; }
+    .google-btn {
+      width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 12px; background: #fff;
+      font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; transition: 0.2s;
+    }
+    .google-btn:hover { background: #f8fafc; border-color: var(--primary); }
+
     .sidebar {
       width: 240px; background: var(--sidebar-bg); color: #fff;
       display: flex; flex-direction: column; justify-content: space-between;
@@ -42,22 +59,8 @@
     .nav-links a:hover { background: rgba(255,255,255,0.07); color: #fff; }
     .nav-links a.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
 
-    .sidebar-promo {
-      background: rgba(255,255,255,0.08); border-radius: 14px; padding: 14px;
-      text-align: center; margin-top: 16px;
-    }
-    .sidebar-promo i { color: #fbbf24; font-size: 1.5rem; margin-bottom: 6px; }
-    .sidebar-promo h4 { font-size: 0.88rem; margin-bottom: 4px; }
-    .sidebar-promo p { font-size: 0.75rem; color: #cbd5e1; margin-bottom: 10px; }
-    .sidebar-promo button {
-      width: 100%; padding: 8px; border: none; border-radius: 8px;
-      background: #6366f1; color: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer;
-    }
-
-    /* Main Content */
     .main { flex: 1; margin-left: 240px; padding: 20px 24px; width: 100%; }
 
-    /* Topbar */
     .topbar {
       display: flex; justify-content: space-between; align-items: center;
       background: var(--card); padding: 12px 20px; border-radius: 14px;
@@ -69,10 +72,9 @@
     .topbar-right { display: flex; align-items: center; gap: 14px; }
     .avatar {
       width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
-      color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700;
+      color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
     }
 
-    /* Stats Grid */
     .stats-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
     }
@@ -92,23 +94,11 @@
     .stat-info span { font-size: 0.78rem; color: var(--muted); display: block; }
     .stat-info h3 { font-size: 1.25rem; font-weight: 800; margin-top: 2px; }
 
-    /* Hero Banner */
-    .hero-banner {
-      background: linear-gradient(120deg, #4f46e5, #7c3aed, #6366f1);
-      border-radius: 16px; padding: 26px 28px; color: #fff;
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px; box-shadow: 0 8px 20px rgba(91, 70, 246, 0.25);
+    .broadcast-banner {
+      background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 14px 18px;
+      border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 12px;
     }
-    .hero-text h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
-    .hero-text p { font-size: 0.95rem; opacity: 0.9; margin-bottom: 16px; }
-    .hero-btn {
-      background: #fbbf24; color: #1e293b; border: none; padding: 10px 20px;
-      border-radius: 99px; font-weight: 700; font-size: 0.9rem; cursor: pointer;
-    }
-    .hero-art { font-size: 4rem; color: #fbbf24; opacity: 0.9; }
 
-    /* Bottom Grid */
-    .content-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; }
     .card {
       background: var(--card); border-radius: 14px; padding: 18px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 18px;
@@ -117,53 +107,39 @@
       display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
     }
     .card-header h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-    .view-all { color: var(--primary); font-size: 0.82rem; font-weight: 600; text-decoration: none; cursor: pointer; }
 
-    /* Task Row */
-    .task-row {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px;
-    }
-    .task-left { display: flex; align-items: center; gap: 12px; }
-    .task-ic {
-      width: 38px; height: 38px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-    }
-    .task-left h4 { font-size: 0.9rem; margin-bottom: 2px; }
-    .task-left p { font-size: 0.76rem; color: var(--muted); }
-    .task-right { display: flex; align-items: center; gap: 10px; }
-    .reward-tag { font-weight: 700; font-size: 0.85rem; color: var(--text); }
-    .start-btn {
-      background: var(--primary); color: #fff; border: none; padding: 7px 14px;
-      border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-    }
-
-    /* Referral & Withdraw */
     .ref-box { display: flex; gap: 8px; margin: 10px 0; }
     .ref-box input {
       flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
       font-size: 0.8rem; background: #f8fafc; color: var(--text);
     }
-    .copy-btn {
+    .copy-btn, .action-btn {
       background: var(--primary); color: #fff; border: none; padding: 8px 14px;
-      border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
-    }
-    .withdraw-btn {
-      width: 100%; padding: 11px; background: var(--green); color: #fff;
-      border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem;
-      cursor: pointer; margin-top: 12px;
+      border-radius: 8px; font-size: 0.80rem; font-weight: 600; cursor: pointer;
     }
 
-    /* Sections */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--muted); }
+    .form-control {
+      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem;
+    }
+    .withdraw-submit {
+      width: 100%; padding: 11px; background: var(--green); color: #fff;
+      border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 6px;
+    }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; font-weight: 700; color: var(--muted); }
+
+    .badge-pending { background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+    .badge-approved { background: #d1fae5; color: #059669; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+    .badge-rejected { background: #fee2e2; color: #dc2626; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+
     .page-section { display: none; }
     .page-section.active { display: block; }
-    .offerwall-frame {
-      width: 100%; min-height: 450px; border: 2px dashed var(--border);
-      border-radius: 12px; display: flex; align-items: center; justify-content: center;
-      flex-direction: column; color: var(--muted); text-align: center; padding: 20px;
-    }
 
-    /* Mobile Responsive */
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; }
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); }
@@ -172,49 +148,58 @@
       .main { margin-left: 0; padding: 14px; }
       .menu-btn { display: block; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .content-grid { grid-template-columns: 1fr; }
-      .hero-art { display: none; }
     }
   </style>
 </head>
 <body>
 
+  <div id="auth-screen">
+    <div class="auth-card">
+      <h2>TaskMint Login</h2>
+      <p>Secure login with your verified Google account to start earning real rewards.</p>
+      <button class="google-btn" onclick="loginWithGoogle()">
+        <i class="fa-brands fa-google" style="color: #ea4335; font-size: 1.2rem;"></i> Continue with Google
+      </button>
+    </div>
+  </div>
+
   <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
-  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div>
       <div class="brand"><i class="fa-solid fa-coins"></i> TaskMint</div>
-      <ul class="nav-links">
+      <ul class="nav-links" id="navLinks">
         <li><a class="active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</a></li>
-        <li><a onclick="showPage('tasks', this)"><i class="fa-solid fa-list-check"></i> Earn Tasks</a></li>
-        <li><a onclick="showPage('offerwall', this)"><i class="fa-solid fa-gift"></i> Offerwall</a></li>
+        <li><a onclick="showPage('offerwall', this)"><i class="fa-solid fa-gift"></i> Live Offerwall</a></li>
         <li><a onclick="showPage('withdraw', this)"><i class="fa-solid fa-wallet"></i> Withdraw</a></li>
         <li><a onclick="showPage('support', this)"><i class="fa-solid fa-headset"></i> Support</a></li>
       </ul>
     </div>
-    <div class="sidebar-promo">
-      <i class="fa-solid fa-trophy"></i>
-      <h4>Invite Friends</h4>
-      <p>Get 10% Commission</p>
-      <button onclick="copyRef()">Copy Referral Link</button>
+    <div class="sidebar-promo" style="background: rgba(255,255,255,0.08); border-radius: 14px; padding: 14px; text-align: center; margin-top: 16px;">
+      <i class="fa-solid fa-trophy" style="color: #fbbf24; font-size: 1.5rem; margin-bottom: 6px;"></i>
+      <h4 style="font-size: 0.88rem; margin-bottom: 4px; color:#fff;">10% Referral</h4>
+      <p style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 10px;">Lifetime Commission</p>
+      <button onclick="copyRef()" style="width: 100%; padding: 8px; border: none; border-radius: 8px; background: #6366f1; color: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Copy Link</button>
     </div>
   </aside>
 
-  <!-- Main -->
   <main class="main">
     <div class="topbar">
       <div class="topbar-left">
         <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
-        <div class="welcome">Welcome back, Muhammad Faisal! 👋</div>
+        <div class="welcome" id="welcomeMsg">Welcome!</div>
       </div>
       <div class="topbar-right">
-        <i class="fa-regular fa-bell" style="color: var(--muted); font-size: 1.1rem; cursor: pointer;"></i>
-        <div class="avatar">MF</div>
+        <div class="avatar" id="userAvatar">MF</div>
+        <button onclick="logout()" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer;">Logout</button>
       </div>
     </div>
 
-    <!-- DASHBOARD PAGE -->
+    <div class="broadcast-banner" id="broadcastBanner">
+      <i class="fa-solid fa-bullhorn" style="font-size: 1.2rem;"></i>
+      <div><strong>Admin Broadcast:</strong> <span id="broadcastText">Welcome to TaskMint! Complete offers and earn real cash.</span></div>
+    </div>
+
     <div id="dashboard" class="page-section active">
       <div class="stats-grid">
         <div class="stat-card">
@@ -223,139 +208,179 @@
         </div>
         <div class="stat-card">
           <div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div>
-          <div class="stat-info"><span>Completed Tasks</span><h3 id="doneCount">0</h3></div>
+          <div class="stat-info"><span>Completed Offers</span><h3 id="doneCount">0</h3></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon ic-pink"><i class="fa-solid fa-users"></i></div>
-          <div class="stat-info"><span>Total Referrals</span><h3>0</h3></div>
+          <div class="stat-info"><span>Referrals</span><h3>0</h3></div>
         </div>
         <div class="stat-card">
           <div class="stat-icon ic-amber"><i class="fa-solid fa-sack-dollar"></i></div>
-          <div class="stat-info"><span>Daily Target</span><h3>100+ PKR</h3></div>
+          <div class="stat-info"><span>Min Withdrawal</span><h3>1000 PKR</h3></div>
         </div>
       </div>
 
-      <div class="hero-banner">
-        <div class="hero-text">
-          <h2>TaskMint</h2>
-          <p>Complete Tasks, Earn Real Money! Instant EasyPaisa & FaucetPay Payouts.</p>
-          <button class="hero-btn" onclick="showPage('offerwall', document.querySelectorAll('.nav-links a')[2])">Start Earning Now →</button>
-        </div>
-        <div class="hero-art"><i class="fa-solid fa-sack-dollar"></i></div>
-      </div>
-
-      <div class="content-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3><i class="fa-solid fa-bolt" style="color: var(--primary);"></i> Available Tasks</h3>
-            <a class="view-all" onclick="showPage('tasks', document.querySelectorAll('.nav-links a')[1])">View All →</a>
-          </div>
-
-          <div class="task-row">
-            <div class="task-left">
-              <div class="task-ic" style="background:#fee2e2; color:#dc2626;"><i class="fa-brands fa-youtube"></i></div>
-              <div><h4>Watch a YouTube Video</h4><p>Watch 2 minutes and earn</p></div>
-            </div>
-            <div class="task-right">
-              <span class="reward-tag">15 PKR</span>
-              <button class="start-btn" onclick="doTask(15)">Start</button>
-            </div>
-          </div>
-
-          <div class="task-row">
-            <div class="task-left">
-              <div class="task-ic" style="background:#dbeafe; color:#2563eb;"><i class="fa-brands fa-facebook"></i></div>
-              <div><h4>Visit Partner Page</h4><p>Visit & stay 30 seconds</p></div>
-            </div>
-            <div class="task-right">
-              <span class="reward-tag">10 PKR</span>
-              <button class="start-btn" onclick="doTask(10)">Start</button>
-            </div>
-          </div>
-
-          <div class="task-row">
-            <div class="task-left">
-              <div class="task-ic" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-clipboard-list"></i></div>
-              <div><h4>Complete a Survey</h4><p>Share your opinion</p></div>
-            </div>
-            <div class="task-right">
-              <span class="reward-tag">30 PKR</span>
-              <button class="start-btn" onclick="doTask(30)">Start</button>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="card">
-            <div class="card-header"><h3><i class="fa-solid fa-link" style="color: var(--primary);"></i> Your Referral Link</h3></div>
-            <div class="ref-box">
-              <input type="text" id="refInput" value="https://https223.github.io/Online_taskhub.com/?ref=faisal" readonly />
-              <button class="copy-btn" onclick="copyRef()">Copy</button>
-            </div>
-            <p style="font-size: 0.78rem; color: var(--muted);">🎁 Invite friends and earn 10% commission</p>
-          </div>
-
-          <div class="card">
-            <div class="card-header"><h3><i class="fa-solid fa-money-bill-wave" style="color: var(--green);"></i> Withdraw Your Earnings</h3></div>
-            <p style="font-size: 0.82rem; color: var(--muted);">Minimum withdrawal <strong>100 PKR</strong> (EasyPaisa / FaucetPay - No KYC)</p>
-            <button class="withdraw-btn" onclick="showPage('withdraw', document.querySelectorAll('.nav-links a')[3])">Request Withdrawal →</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TASKS PAGE -->
-    <div id="tasks" class="page-section">
       <div class="card">
-        <div class="card-header"><h3>All Available Tasks</h3></div>
-        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 14px;">Complete daily microtasks below to earn instant PKR rewards.</p>
-        <div class="task-row">
-          <div class="task-left">
-            <div class="task-ic" style="background:#d1fae5; color:#059669;"><i class="fa-solid fa-mobile-screen"></i></div>
-            <div><h4>App Install & Open</h4><p>Install partner app and open for 30s</p></div>
-          </div>
-          <div class="task-right"><span class="reward-tag">40 PKR</span><button class="start-btn" onclick="doTask(40)">Start</button></div>
+        <div class="card-header"><h3><i class="fa-solid fa-link" style="color: var(--primary);"></i> Your Lifetime Referral Link</h3></div>
+        <div class="ref-box">
+          <input type="text" id="refInput" readonly />
+          <button class="copy-btn" onclick="copyRef()">Copy</button>
         </div>
+        <p style="font-size: 0.78rem; color: var(--muted);">🎁 Earn 10% lifetime commission from your referrals' earnings</p>
       </div>
     </div>
 
-    <!-- OFFERWALL PAGE -->
     <div id="offerwall" class="page-section">
       <div class="card">
-        <div class="card-header"><h3>Bitcotasks & Monlix Offerwalls</h3></div>
-        <div class="offerwall-frame">
-          <i class="fa-solid fa-gift" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 10px;"></i>
-          <h4>Offerwall Integration Ready</h4>
-          <p style="font-size: 0.85rem; margin-top: 6px;">Apna Monlix ya Bitcotasks ka iframe URL yahan lagayein.</p>
-        </div>
+        <div class="card-header"><h3>Bitcotasks Live Offerwall</h3></div>
+        <iframe style="width:100%; height:700px; border:none; border-radius:12px;" scrolling="yes" frameborder="0" src="https://bitcotasks.com/offerwall/zkt6xa29u366inmpko8sig7hxwg87o/mf3767189"></iframe>
       </div>
     </div>
 
-    <!-- WITHDRAW PAGE -->
     <div id="withdraw" class="page-section">
       <div class="card">
-        <div class="card-header"><h3>Withdraw Funds (No-KYC)</h3></div>
-        <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 12px;">Minimum withdrawal: <strong>100 PKR</strong> via EasyPaisa or FaucetPay.</p>
-        <button class="withdraw-btn" onclick="alert('Minimum 100 PKR required to withdraw!')">Submit Withdrawal Request</button>
+        <div class="card-header"><h3>Request Withdrawal (Minimum 1000 PKR / $5)</h3></div>
+        <div class="form-group">
+          <label>Select Payment Method</label>
+          <select id="wMethod" class="form-control">
+            <option value="EasyPaisa">EasyPaisa</option>
+            <option value="JazzCash">JazzCash</option>
+            <option value="Binance">Binance (USDT / Pay ID)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Account Number / Wallet ID / Binance Email</label>
+          <input type="text" id="wAcc" class="form-control" placeholder="e.g. 03176776279 or binance@email.com" />
+        </div>
+        <div class="form-group">
+          <label>Amount in PKR (Min 1000)</label>
+          <input type="number" id="wAmount" class="form-control" placeholder="1000" />
+        </div>
+        <button class="withdraw-submit" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
       </div>
     </div>
 
-    <!-- SUPPORT PAGE -->
     <div id="support" class="page-section">
       <div class="card">
-        <div class="card-header"><h3>Contact & Support</h3></div>
-        <p style="font-size: 0.9rem; color: var(--muted);">For support or advertiser inquiries, email us at: <strong>mf3767189@gmail.com</strong></p>
+        <div class="card-header"><h3>Support & Messages</h3></div>
+        <div class="form-group">
+          <label>Write your message to Admin</label>
+          <textarea id="msgText" class="form-control" rows="3" placeholder="Ask about payment or task..."></textarea>
+        </div>
+        <button class="action-btn" onclick="sendSupportMessage()">Send Message</button>
+        <div id="userSupportHistory" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+
+    <div id="admin-panel" class="page-section">
+      <div class="card" style="background: #1e1b4b; color: #fff;">
+        <h2><i class="fa-solid fa-shield-halved"></i> Admin Master Dashboard</h2>
+        <p style="font-size:0.85rem; color:#cbd5e1;">Logged in as Administrator: mf3767189@gmail.com</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Send Broadcast Update</h3></div>
+        <input type="text" id="adminBroadcastInput" class="form-control" placeholder="Type new announcement for all users..." style="margin-bottom:10px;" />
+        <button class="action-btn" onclick="saveBroadcast()">Publish Broadcast</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>All Registered Users & Balances</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>User Email</th>
+                <th>Balance (PKR)</th>
+                <th>Tasks Completed</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Withdrawal Requests (Approve / Reject)</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Method</th>
+                <th>Account</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminWithdrawTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>User Support Inbox & Replies</h3></div>
+        <div id="adminSupportInbox"></div>
       </div>
     </div>
   </main>
+    <script>
+    let currentUser = JSON.parse(localStorage.getItem('taskmint_user')) || null;
+    let allUsers = JSON.parse(localStorage.getItem('taskmint_all_users')) || {};
+    let withdrawRequests = JSON.parse(localStorage.getItem('taskmint_withdraws')) || [];
+    let supportMessages = JSON.parse(localStorage.getItem('taskmint_support')) || [];
+    let broadcastMsg = localStorage.getItem('taskmint_broadcast') || "Welcome to TaskMint! Complete offers and earn real cash.";
 
-  <script>
-    let balance = 0, tasksDone = 0;
-    function doTask(amt) {
-      balance += amt; tasksDone++;
-      document.getElementById('bal').innerText = balance;
-      document.getElementById('doneCount').innerText = tasksDone;
+    document.getElementById('broadcastText').innerText = broadcastMsg;
+
+    if (currentUser) {
+      document.getElementById('auth-screen').style.display = 'none';
+      initUserSession();
     }
+
+    function loginWithGoogle() {
+      let email = prompt("Enter your Gmail address to continue:", "mf3767189@gmail.com");
+      if (!email || !email.includes('@')) {
+        alert("Valid email required!");
+        return;
+      }
+      email = email.trim().toLowerCase();
+
+      currentUser = { email: email, balance: 0, tasks: 0 };
+      if (!allUsers[email]) {
+        allUsers[email] = currentUser;
+      } else {
+        currentUser = allUsers[email];
+      }
+      localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+      localStorage.setItem('taskmint_all_users', JSON.stringify(allUsers));
+
+      document.getElementById('auth-screen').style.display = 'none';
+      initUserSession();
+    }
+
+    function initUserSession() {
+      document.getElementById('welcomeMsg').innerText = `Welcome, ${currentUser.email}! 👋`;
+      document.getElementById('userAvatar').innerText = currentUser.email.substring(0,2).toUpperCase();
+      document.getElementById('bal').innerText = currentUser.balance;
+      document.getElementById('doneCount').innerText = currentUser.tasks;
+      document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.email}`;
+
+      if (currentUser.email === "mf3767189@gmail.com") {
+        let adminNav = document.createElement('li');
+        adminNav.innerHTML = `<a onclick="showPage('admin-panel', this)"><i class="fa-solid fa-gauge-high"></i> Admin Panel</a>`;
+        document.getElementById('navLinks').appendChild(adminNav);
+        renderAdminPanel();
+      }
+      renderSupportHistory();
+    }
+
+    function logout() {
+      localStorage.removeItem('taskmint_user');
+      location.reload();
+    }
+
     function showPage(id, el) {
       document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -363,17 +388,140 @@
       if (el) el.classList.add('active');
       if (window.innerWidth <= 900) toggleMenu();
     }
+
     function toggleMenu() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('overlay').classList.toggle('open');
     }
+
     function copyRef() {
       const inp = document.getElementById('refInput');
       inp.select();
       navigator.clipboard.writeText(inp.value);
-      alert('Referral link copied!');
+      alert('Lifetime referral link copied!');
+    }
+
+    function submitWithdrawal() {
+      let method = document.getElementById('wMethod').value;
+      let acc = document.getElementById('wAcc').value;
+      let amount = parseInt(document.getElementById('wAmount').value);
+
+      if (!acc || isNaN(amount)) {
+        alert("Please fill all details correctly.");
+        return;
+      }
+      if (amount < 1000) {
+        alert("Minimum withdrawal is 1000 PKR ($5).");
+        return;
+      }
+      if (currentUser.balance < amount) {
+        alert("Insufficient balance!");
+        return;
+      }
+
+      currentUser.balance -= amount;
+      updateUserData();
+
+      let req = { id: Date.now(), email: currentUser.email, method, acc, amount, status: 'Pending' };
+      withdrawRequests.push(req);
+      localStorage.setItem('taskmint_withdraws', JSON.stringify(withdrawRequests));
+
+      alert("Withdrawal request submitted successfully! Admin will review and approve.");
+      document.getElementById('wAcc').value = '';
+      document.getElementById('wAmount').value = '';
+      initUserSession();
+    }
+
+    function sendSupportMessage() {
+      let text = document.getElementById('msgText').value;
+      if (!text) return;
+      supportMessages.push({ id: Date.now(), email: currentUser.email, text, reply: '' });
+      localStorage.setItem('taskmint_support', JSON.stringify(supportMessages));
+      document.getElementById('msgText').value = '';
+      alert("Message sent to Admin!");
+      renderSupportHistory();
+    }
+
+    function renderSupportHistory() {
+      let html = '<h4>Your Support Tickets & Replies</h4>';
+      let userMsgs = supportMessages.filter(m => m.email === currentUser.email);
+      userMsgs.forEach(m => {
+        html += `<div style="background:#f8fafc; padding:10px; border-radius:8px; margin-top:8px; font-size:0.85rem;">
+          <strong>You:</strong> ${m.text}<br>
+          <strong style="color:var(--green);">Admin Reply:</strong> ${m.reply ? m.reply : '<span style="color:var(--muted);">Waiting for admin response...</span>'}
+        </div>`;
+      });
+      document.getElementById('userSupportHistory').innerHTML = html;
+    }
+
+    function updateUserData() {
+      allUsers[currentUser.email] = currentUser;
+      localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+      localStorage.setItem('taskmint_all_users', JSON.stringify(allUsers));
+    }
+
+    function renderAdminPanel() {
+      let uHtml = '';
+      for (let email in allUsers) {
+        let u = allUsers[email];
+        uHtml += `<tr><td>${u.email}</td><td>${u.balance} PKR</td><td>${u.tasks}</td></tr>`;
+      }
+      document.getElementById('adminUsersTable').innerHTML = uHtml;
+
+      let wHtml = '';
+      withdrawRequests.forEach((req, idx) => {
+        wHtml += `<tr>
+          <td>${req.email}</td>
+          <td>${req.method}</td>
+          <td>${req.acc}</td>
+          <td>${req.amount} PKR</td>
+          <td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td>
+          <td>
+            ${req.status === 'Pending' ? `
+              <button onclick="changeWithdrawStatus(${idx}, 'Approved')" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>
+              <button onclick="changeWithdrawStatus(${idx}, 'Rejected')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Reject</button>
+            ` : 'Completed'}
+          </td>
+        </tr>`;
+      });
+      document.getElementById('adminWithdrawTable').innerHTML = wHtml;
+
+      let sHtml = '';
+      supportMessages.forEach((msg, idx) => {
+        sHtml += `<div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:10px; font-size:0.85rem;">
+          <strong>From:</strong> ${msg.email}<br>
+          <strong>Message:</strong> ${msg.text}<br>
+          <div style="margin-top:6px; display:flex; gap:6px;">
+            <input type="text" id="reply_${idx}" class="form-control" placeholder="Type reply..." value="${msg.reply}">
+            <button class="action-btn" onclick="sendAdminReply(${idx})">Send Reply</button>
+          </div>
+        </div>`;
+      });
+      document.getElementById('adminSupportInbox').innerHTML = sHtml;
+    }
+
+    function changeWithdrawStatus(idx, status) {
+      withdrawRequests[idx].status = status;
+      localStorage.setItem('taskmint_withdraws', JSON.stringify(withdrawRequests));
+      renderAdminPanel();
+      alert("Withdrawal status updated!");
+    }
+
+    function sendAdminReply(idx) {
+      let replyText = document.getElementById(`reply_${idx}`).value;
+      supportMessages[idx].reply = replyText;
+      localStorage.setItem('taskmint_support', JSON.stringify(supportMessages));
+      renderAdminPanel();
+      alert("Reply sent successfully!");
+    }
+
+    function saveBroadcast() {
+      let text = document.getElementById('adminBroadcastInput').value;
+      if (!text) return;
+      localStorage.setItem('taskmint_broadcast', text);
+      document.getElementById('broadcastText').innerText = text;
+      alert("Broadcast message updated successfully!");
     }
   </script>
 </body>
-  </html>
-            
+</html>

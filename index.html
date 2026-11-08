@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TaskMint — Professional Earning Dashboard</title>
+  <meta name="offerwall-verification" content="6af09993b45daf4663144350">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     :root {
@@ -155,6 +156,7 @@
 </head>
 <body>
 
+  <!-- Clean Login Screen without pre-filled admin email/pass -->
   <div id="auth-screen">
     <div class="auth-card">
       <h2>TaskMint Portal</h2>
@@ -168,11 +170,11 @@
       <div id="formLogin">
         <div class="form-group">
           <label>Gmail Address</label>
-          <input type="email" id="loginEmail" class="form-control" placeholder="mf3767189@gmail.com" />
+          <input type="email" id="loginEmail" class="form-control" placeholder="name@gmail.com" />
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="loginPass" class="form-control" placeholder="******" />
+          <input type="password" id="loginPass" class="form-control" placeholder="Enter password" />
         </div>
         <button class="auth-submit" onclick="handleLogin()">Login to Account</button>
       </div>
@@ -291,7 +293,6 @@
         <button class="withdraw-submit" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
       </div>
 
-      <!-- Withdrawal History Card -->
       <div class="card">
         <div class="card-header"><h3>Your Withdrawal History</h3></div>
         <div class="table-responsive">
@@ -375,7 +376,7 @@
         <div id="adminSupportInbox"></div>
       </div>
     </div>
-                                            </main>
+            </main>
           <script>
     let allUsers = JSON.parse(localStorage.getItem('taskmint_all_users')) || {};
     if (!allUsers["mf3767189@gmail.com"]) {

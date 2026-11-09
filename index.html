@@ -7,7 +7,7 @@
   <meta name="offerwall-verification" content="6af09993b45daf4663144350">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   
-  <!-- Firebase App & Firestore SDKs -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
@@ -384,17 +384,17 @@
         <div id="adminSupportInbox"></div>
       </div>
     </div>
-            </main>
-          <script>
-    // Initialize Firebase
+          </main>
+    <script>
+    // Initialize Firebase with your new project config
     const firebaseConfig = {
-      apiKey: "AIzaSyDaFSzQ0hy9w3XaCqGmJ9hMF2sXSzLRjlU",
-      authDomain: "addearn-6abfb.firebaseapp.com",
-      projectId: "addearn-6abfb",
-      storageBucket: "addearn-6abfb.firebasestorage.app",
-      messagingSenderId: "255860665512",
-      appId: "1:255860665512:web:6fc14d8761b459bf76e69d",
-      measurementId: "G-5EXYXEM3XH"
+      apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",
+      authDomain: "online-taskhub.firebaseapp.com",
+      projectId: "online-taskhub",
+      storageBucket: "online-taskhub.firebasestorage.app",
+      messagingSenderId: "734218697992",
+      appId: "1:734218697992:web:7c7c0f...",
+      measurementId: "G-7W4XYRC1YQ"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -427,7 +427,6 @@
       }
     }
 
-    // Firebase Login
     async function handleLogin() {
       let email = document.getElementById('loginEmail').value.trim().toLowerCase();
       let pass = document.getElementById('loginPass').value.trim();
@@ -442,7 +441,6 @@
         let doc = await docRef.get();
 
         if (!doc.exists) {
-          // Check if admin default exists, else alert
           if (email === "mf3767189@gmail.com" && pass === "112211") {
             currentUser = { email: email, pass: pass, balance: 0, tasks: 0 };
             await docRef.set(currentUser);
@@ -468,7 +466,6 @@
       }
     }
 
-    // Firebase Signup
     async function handleSignup() {
       let email = document.getElementById('signupEmail').value.trim().toLowerCase();
       let pass = document.getElementById('signupPass').value.trim();
@@ -534,7 +531,6 @@
       let safeSubId = currentUser.email.replace(/[^a-zA-Z0-9_]/g, '_');
       document.getElementById('offerwallFrame').src = `https://bitcotasks.com/offerwall/zkt6xa29u366inmpko8sig7hxwg87o/${safeSubId}`;
 
-      // Admin panel restricted ONLY to mf3767189@gmail.com
       if (currentUser.email === "mf3767189@gmail.com") {
         if (!document.getElementById('adminNavLink')) {
           let adminNav = document.createElement('li');
@@ -669,9 +665,7 @@
       } catch(e) {}
     }
 
-    // Admin Panel Functions
     async function loadAdminPanelData() {
-      // Users table
       let uHtml = '';
       let usersSnap = await db.collection("users").get();
       usersSnap.forEach(doc => {
@@ -680,7 +674,6 @@
       });
       document.getElementById('adminUsersTable').innerHTML = uHtml;
 
-      // Withdraws table
       let wHtml = '';
       let wSnap = await db.collection("withdraws").get();
       wSnap.forEach(doc => {
@@ -703,7 +696,6 @@
       });
       document.getElementById('adminWithdrawTable').innerHTML = wHtml;
 
-      // Support Inbox
       let sHtml = '';
       let sSnap = await db.collection("support").get();
       sSnap.forEach(doc => {

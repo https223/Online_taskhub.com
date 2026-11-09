@@ -1,321 +1,776 @@
 <!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMint - Online Earning Hub</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .navbar, .card { background-color: #1e1e1e !important; color: #ffffff !important; border-color: #2c2c2c !important; }
-        .form-label { color: #ffffff !important; font-weight: 600; }
-        .form-control { background-color: #2c2c2c !important; color: #ffffff !important; border: 1px solid #555 !important; }
-        .form-control::placeholder { color: #bbbbbb !important; opacity: 1; }
-        .form-control:focus { background-color: #2c2c2c !important; color: #ffffff !important; border-color: #0d6efd !important; box-shadow: none; }
-        .btn-primary { background-color: #0d6efd; border: none; }
-        .sidebar { min-height: 100vh; background-color: #181818; border-left: 1px solid #2c2c2c; }
-        .nav-link { color: #aaaaaa; border-radius: 5px; margin-bottom: 5px; }
-        .nav-link:hover, .nav-link.active { background-color: #0d6efd; color: #ffffff; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskMint — Professional Earning Dashboard</title>
+  <meta name="offerwall-verification" content="6af09993b45daf4663144350">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --sidebar-bg: #1a1635;
+      --sidebar-active: linear-gradient(90deg, #6366f1, #8b5cf6);
+      --bg: #121212;
+      --card: #1e1e1e;
+      --text: #ffffff;
+      --muted: #a1a1aa;
+      --primary: #5b46f6;
+      --green: #10b981;
+      --red: #ef4444;
+      --border: #2c2c2c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+    #auth-screen {
+      position: fixed; inset: 0; background: rgba(12, 12, 12, 0.95); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .auth-card {
+      background: var(--card); padding: 32px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid var(--border);
+    }
+    .auth-card h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+    .auth-card p { font-size: 0.88rem; color: var(--muted); margin-bottom: 20px; }
+    .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+    .auth-tab { flex: 1; padding: 10px; font-weight: 700; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    .form-group { margin-bottom: 12px; text-align: left; }
+    .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--muted); }
+    .form-control {
+      width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem;
+      background: #2a2a2a; color: #fff;
+    }
+    .auth-submit {
+      width: 100%; padding: 11px; background: var(--primary); color: #fff;
+      border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 10px;
+    }
+
+    .sidebar {
+      width: 240px; background: var(--sidebar-bg); color: #fff;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 20px 14px; position: fixed; top: 0; bottom: 0; left: 0;
+      z-index: 200; transition: transform 0.3s ease; border-right: 1px solid var(--border);
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px; font-size: 1.25rem;
+      font-weight: 800; padding: 0 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .brand i { color: #a78bfa; font-size: 1.4rem; }
+    .nav-links { list-style: none; margin-top: 16px; flex: 1; }
+    .nav-links li { margin-bottom: 6px; }
+    .nav-links a {
+      display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+      color: #cbd5e1; text-decoration: none; border-radius: 10px;
+      font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: 0.2s;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+    .nav-links a.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
+
+    .main { flex: 1; margin-left: 240px; padding: 20px 24px; width: 100%; }
+
+    .topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card); padding: 12px 20px; border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid var(--border);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .menu-btn { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text); }
+    .welcome { font-size: 0.95rem; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
+      color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
+    }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card); padding: 16px; border-radius: 14px;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2); border: 1px solid var(--border);
+    }
+    .stat-icon {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .ic-purple { background: rgba(109, 40, 217, 0.2); color: #a78bfa; }
+    .ic-green { background: rgba(5, 150, 105, 0.2); color: #34d399; }
+    .ic-pink { background: rgba(219, 39, 119, 0.2); color: #f472b6; }
+    .stat-info span { font-size: 0.78rem; color: var(--muted); display: block; }
+    .stat-info h3 { font-size: 1.25rem; font-weight: 800; margin-top: 2px; }
+
+    .broadcast-banner {
+      background: rgba(30, 64, 175, 0.2); border: 1px solid #1e40af; color: #93c5fd; padding: 14px 18px;
+      border-radius: 12px; margin-bottom: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 12px;
+    }
+
+    .card {
+      background: var(--card); border-radius: 14px; padding: 18px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 18px; border: 1px solid var(--border);
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+    }
+    .card-header h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+    .ref-box { display: flex; gap: 8px; margin: 10px 0; }
+    .ref-box input {
+      flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.8rem; background: #2a2a2a; color: var(--text);
+    }
+    .copy-btn, .action-btn {
+      background: var(--primary); color: #fff; border: none; padding: 8px 14px;
+      border-radius: 8px; font-size: 0.80rem; font-weight: 600; cursor: pointer;
+    }
+
+    .withdraw-submit {
+      width: 100%; padding: 11px; background: var(--green); color: #fff;
+      border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 6px;
+    }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    th, td { padding: 10px; border-bottom: 1px solid var(--border); }
+    th { background: #252525; font-weight: 700; color: var(--muted); }
+
+    .badge-pending { background: rgba(217, 119, 6, 0.2); color: #fbbf24; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+    .badge-approved { background: rgba(5, 150, 105, 0.2); color: #34d399; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+    .badge-rejected { background: rgba(220, 38, 38, 0.2); color: #f87171; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; }
+    @media (max-width: 900px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .overlay.open { display: block; }
+      .main { margin-left: 0; padding: 14px; }
+      .menu-btn { display: block; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Main App Container -->
-    <div id="app" class="container-fluid">
+  <!-- Auth Screen -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <h2>TaskMint Portal</h2>
+      <p>Login or create your account with Gmail.</p>
+      
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
+        <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Register</div>
+      </div>
+
+      <div id="formLogin">
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="name@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPass" class="form-control" placeholder="Enter password" />
+        </div>
+        <button class="auth-submit" onclick="handleLogin()">Login to Account</button>
+      </div>
+
+      <div id="formSignup" style="display: none;">
+        <div class="form-group">
+          <label>Gmail Address</label>
+          <input type="email" id="signupEmail" class="form-control" placeholder="yourgmail@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>Create Password (Min 6 Characters)</label>
+          <input type="password" id="signupPass" class="form-control" placeholder="At least 6 chars" />
+        </div>
+        <div class="form-group">
+          <label id="captchaLabel">Solve Math: 3 + 4 = ?</label>
+          <input type="number" id="signupCaptcha" class="form-control" placeholder="Enter answer" />
+        </div>
+        <button class="auth-submit" onclick="handleSignup()" style="background: var(--green);">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <div class="brand"><i class="fa-solid fa-coins"></i> TaskMint</div>
+      <ul class="nav-links" id="navLinks">
+        <li><a class="active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+        <li><a onclick="showPage('tasks', this)"><i class="fa-solid fa-list-check"></i> Task Section (PTP)</a></li>
+        <li><a onclick="showPage('offers', this)"><i class="fa-solid fa-gift"></i> Offer Section</a></li>
+        <li><a onclick="showPage('withdraw', this)"><i class="fa-solid fa-wallet"></i> Withdraw</a></li>
+        <li><a onclick="showPage('support', this)"><i class="fa-solid fa-headset"></i> Support</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-promo" style="background: rgba(255,255,255,0.05); border-radius: 14px; padding: 14px; text-align: center; margin-top: 16px; border: 1px solid var(--border);">
+      <i class="fa-solid fa-trophy" style="color: #fbbf24; font-size: 1.5rem; margin-bottom: 6px;"></i>
+      <h4 style="font-size: 0.88rem; margin-bottom: 4px; color:#fff;">10% Referral</h4>
+      <p style="font-size: 0.75rem; color: #cbd5e1; margin-bottom: 10px;">Lifetime Commission</p>
+      <button onclick="copyRef()" style="width: 100%; padding: 8px; border: none; border-radius: 8px; background: #6366f1; color: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Copy Link</button>
+    </div>
+  </aside>
+
+  <!-- Main Dashboard Area -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
+        <div class="welcome" id="welcomeMsg">Welcome!</div>
+      </div>
+      <div class="topbar-right">
+        <div class="avatar" id="userAvatar">TM</div>
+        <button onclick="logout()" style="background:rgba(220,38,38,0.2); color:#f87171; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer;">Logout</button>
+      </div>
+    </div>
+
+    <div class="broadcast-banner" id="broadcastBanner">
+      <i class="fa-solid fa-bullhorn" style="font-size: 1.2rem;"></i>
+      <div><strong>Admin Broadcast:</strong> <span id="broadcastText">Welcome to TaskMint! Complete offers and earn real cash.</span></div>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div id="dashboard" class="page-section active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon ic-purple"><i class="fa-solid fa-wallet"></i></div>
+          <div class="stat-info"><span>Current Balance</span><h3>$<span id="bal">0.00</span></h3></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="stat-info"><span>Completed Offers</span><h3 id="doneCount">0</h3></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-pink"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-info"><span>Referrals</span><h3>0</h3></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-link" style="color: var(--primary);"></i> Your Lifetime Referral Link</h3></div>
+        <div class="ref-box">
+          <input type="text" id="refInput" readonly />
+          <button class="copy-btn" onclick="copyRef()">Copy</button>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--muted);">🎁 Earn 10% lifetime commission from your referrals' earnings</p>
+      </div>
+    </div>
+
+    <!-- Task Section: PTP Link Integrated -->
+    <div id="tasks" class="page-section">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Live PTP Traffic Link</h3></div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">Visit the link below to view tasks and earn rewards securely tracked with your ID.</p>
         
-        <!-- AUTH SECTION -->
-        <div id="authSection" class="row justify-content-center align-items-center min-vh-100">
-            <div class="col-md-4">
-                <div class="card p-4 shadow-lg">
-                    <h3 class="text-center mb-4 text-primary"><i class="fas fa-tasks"></i> TaskMint</h3>
-                    
-                    <!-- Login Form -->
-                    <div id="loginForm">
-                        <div class="mb-3">
-                            <label class="form-label">جی میل (Gmail)</label>
-                            <input type="email" id="loginEmail" class="form-control" placeholder="name@gmail.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">پاسورڈ</label>
-                            <input type="password" id="loginPassword" class="form-control" placeholder="******">
-                        </div>
-                        <button onclick="handleLogin()" class="btn btn-primary w-100 mb-3">لاگ ان کریں</button>
-                        <p class="text-center">اکاؤنٹ نہیں ہے؟ <a href="#" onclick="toggleAuth(true)" class="text-decoration-none text-info">سائن اپ کریں</a></p>
-                    </div>
-
-                    <!-- Signup Form -->
-                    <div id="signupForm" style="display: none;">
-                        <div class="mb-3">
-                            <label class="form-label">جی میل (Gmail)</label>
-                            <input type="email" id="signupEmail" class="form-control" placeholder="name@gmail.com">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">پاسورڈ</label>
-                            <input type="password" id="signupPassword" class="form-control" placeholder="******">
-                        </div>
-                        <!-- Math Captcha -->
-                        <div class="mb-3">
-                            <label class="form-label text-warning" id="captchaLabel"></label>
-                            <input type="number" id="captchaAnswer" class="form-control" placeholder="جواب لکھیں">
-                        </div>
-                        <button onclick="handleSignup()" class="btn btn-success w-100 mb-3">سائن اپ کریں</button>
-                        <p class="text-center">پہلے سے اکاؤنٹ ہے؟ <a href="#" onclick="toggleAuth(false)" class="text-decoration-none text-info">لاگ ان کریں</a></p>
-                    </div>
-                </div>
-            </div>
+        <div class="ratio ratio-16x9" style="min-height: 500px;">
+          <iframe id="ptpFrame" style="width:100%; height:500px; border:none; border-radius:12px;" scrolling="yes" frameborder="0" src=""></iframe>
         </div>
+      </div>
+    </div>
 
-        <!-- DASHBOARD SECTION -->
-        <div id="dashboardSection" class="row" style="display: none;">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-3 d-none d-md-block">
-                <h4 class="text-primary mb-4">TaskMint</h4>
-                <ul class="nav flex-column">
-                    <li class="nav-item"><a class="nav-link active" href="#" onclick="switchTab('home')"><i class="fas fa-home me-2"></i> ڈیش بورڈ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('tasks')"><i class="fas fa-briefcase me-2"></i> ٹاسک سیکشن (PTP)</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('offers')"><i class="fas fa-layer-group me-2"></i> آفر سیکشن</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="switchTab('withdraw')"><i class="fas fa-wallet me-2"></i> ودھڈرا</a></li>
-                    <li id="adminNavTab" class="nav-item" style="display: none;"><a class="nav-link text-warning" href="#" onclick="switchTab('admin')"><i class="fas fa-shield-alt me-2"></i> ایڈمن پینل</a></li>
-                    <li class="nav-item mt-4"><a class="nav-link text-danger" href="#" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-2"></i> لاگ آؤٹ</a></li>
-                </ul>
-            </div>
+    <!-- Offer Section: Offerwall.me Public API Integrated -->
+    <div id="offers" class="page-section">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offerwall</h3></div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;">Complete high-paying offers via Offerwall.me API.</p>
+        <iframe id="offerwallFrame" style="width:100%; height:700px; border:none; border-radius:12px;" scrolling="yes" frameborder="0" src=""></iframe>
+      </div>
+    </div>
 
-            <!-- Main Content Area -->
-            <div class="col-md-9 col-lg-10 p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 p-3 card">
-                    <div>
-                        <h5 class="mb-0">خوش آمدید، <span id="userEmailDisplay" class="text-primary"></span></h5>
-                    </div>
-                    <div>
-                        <span class="badge bg-success p-2 fs-6">بیلنس: $<span id="userBalance">0.00</span></span>
-                    </div>
-                </div>
-
-                <!-- TAB 1: HOME -->
-                <div id="tab-home" class="tab-content-item">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="card p-4 mb-4">
-                                <h4>خوش آمدید!</h4>
-                                <p class="text-muted">ٹاسک مکمل کریں اور روزانہ کی بنیاد پر ارننگ کریں۔</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card p-4 border-info">
-                                <h5 class="text-info"><i class="fas fa-info-circle"></i> ودھڈرا پالیسی</h5>
-                                <p class="small text-muted mb-0">کم از کم ودھڈرا کی حد $5.00 ہے۔</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 2: TASKS SECTION -->
-                <div id="tab-tasks" class="tab-content-item" style="display: none;">
-                    <div class="card p-4 shadow-sm mb-4">
-                        <h4 class="text-info mb-3"><i class="fas fa-link"></i> لائیو PTP ٹاسک</h4>
-                        <div class="ratio ratio-16x9">
-                            <iframe id="ptpFrame" src="" allowfullscreen style="border: none; border-radius: 8px;"></iframe>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 3: OFFERS SECTION -->
-                <div id="tab-offers" class="tab-content-item" style="display: none;">
-                    <div class="card p-4 shadow-sm mb-4">
-                        <h4 class="text-primary mb-3"><i class="fas fa-layer-group"></i> سروے اور بڑی آفرز</h4>
-                        <div class="ratio ratio-16x9" style="min-height: 600px;">
-                            <iframe id="offerwallFrame" src="" allowfullscreen style="border: none; border-radius: 8px;"></iframe>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 4: WITHDRAW SECTION -->
-                <div id="tab-withdraw" class="tab-content-item" style="display: none;">
-                    <div class="card p-4 col-md-6">
-                        <h4 class="mb-3">ودھڈرا کی درخواست</h4>
-                        <div class="mb-3">
-                            <label class="form-label">رقم ($)</label>
-                            <input type="number" id="withdrawAmount" class="form-control" placeholder="5.00">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">والٹ / اکاؤنٹ کی تفصیل</label>
-                            <input type="text" id="withdrawAccountDetails" class="form-control" placeholder="Binance / EasyPaisa details">
-                        </div>
-                        <button onclick="requestWithdraw()" class="btn btn-primary w-100">ودھڈرا کی درخواست بھیجیں</button>
-                    </div>
-                </div>
-
-                <!-- TAB 5: ADMIN PANEL -->
-                <div id="tab-admin" class="tab-content-item" style="display: none;">
-                    <div class="card p-4">
-                        <h4 class="text-warning mb-3"><i class="fas fa-shield-alt"></i> ایڈمن کنٹرول پینل</h4>
-                        <div id="adminDataList" class="table-responsive"></div>
-                    </div>
-                </div>
-            </div>
+    <!-- Withdraw Section -->
+    <div id="withdraw" class="page-section">
+      <div class="card" style="background: rgba(49, 46, 129, 0.2); border: 1px solid #4338ca; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 12px;">
+        <div>
+          <h4 style="font-size: 0.95rem; color: #a5b4fc; margin-bottom: 2px;"><i class="fa-solid fa-triangle-exclamation"></i> Minimum Withdrawal Policy</h4>
+          <p style="font-size: 0.82rem; color: #cbd5e1;">You can request a payout once your balance reaches the minimum threshold of <strong>$5.00</strong>.</p>
         </div>
-                                </div>
-                                    <!-- Firebase SDKs & App Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        <div style="font-size: 1.4rem; font-weight: 800; color: #818cf8;">$5.00</div>
+      </div>
 
-        const firebaseConfig = {
-            projectId: "online-taskhub",
-            appId: "online-taskhub-app"
-        };
+      <div class="card">
+        <div class="card-header"><h3>Request Withdrawal</h3></div>
+        <div class="form-group">
+          <label>Select Payment Method</label>
+          <select id="wMethod" class="form-control" onchange="updateWithdrawFields()">
+            <option value="EasyPaisa">EasyPaisa</option>
+            <option value="JazzCash">JazzCash</option>
+            <option value="Binance">Binance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label id="lblField1">Account Name</label>
+          <input type="text" id="wField1" class="form-control" placeholder="e.g. Muhammad Faisal" />
+        </div>
+        <div class="form-group">
+          <label id="lblField2">Account Number</label>
+          <input type="text" id="wField2" class="form-control" placeholder="e.g. 03176776279" />
+        </div>
+        <div class="form-group">
+          <label>Amount in USD ($) (Min $5)</label>
+          <input type="number" step="0.01" id="wAmount" class="form-control" placeholder="5.00" />
+        </div>
+        <button class="withdraw-submit" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+      </div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+      <div class="card">
+        <div class="card-header"><h3>Your Withdrawal History</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Details</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="userWithdrawHistory"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
-        let currentUser = null;
-        let num1 = Math.floor(Math.random() * 10) + 1;
-        let num2 = Math.floor(Math.random() * 10) + 1;
-        document.getElementById('captchaLabel').innerText = `${num1} + ${num2} کا جواب کیا ہے؟`;
+    <!-- Support Section -->
+    <div id="support" class="page-section">
+      <div class="card">
+        <div class="card-header"><h3>Support & Messages</h3></div>
+        <div class="form-group">
+          <label>Write your message to Admin</label>
+          <textarea id="msgText" class="form-control" rows="3" placeholder="Ask about payment or task..."></textarea>
+        </div>
+        <button class="action-btn" onclick="sendSupportMessage()">Send Message</button>
+        <div id="userSupportHistory" style="margin-top: 20px;"></div>
+      </div>
+    </div>
 
-        window.toggleAuth = function(isSignup) {
-            document.getElementById('loginForm').style.display = isSignup ? 'none' : 'block';
-            document.getElementById('signupForm').style.display = isSignup ? 'block' : 'none';
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="page-section">
+      <div class="card" style="background: #1e1b4b; color: #fff;">
+        <h2><i class="fa-solid fa-shield-halved"></i> Admin Master Dashboard</h2>
+        <p style="font-size:0.85rem; color:#cbd5e1;">Logged in as Administrator: mf3767189@gmail.com</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Send Broadcast Update</h3></div>
+        <input type="text" id="adminBroadcastInput" class="form-control" placeholder="Type new announcement for all users..." style="margin-bottom:10px;" />
+        <button class="action-btn" onclick="saveBroadcast()">Publish Broadcast</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>All Registered Users & Balances</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>User Email</th>
+                <th>Balance ($)</th>
+                <th>Tasks Completed</th>
+              </tr>
+            </thead>
+            <tbody id="adminUsersTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Withdrawal Requests (Approve / Reject)</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Method</th>
+                <th>Account / Nickname</th>
+                <th>Number / ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminWithdrawTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Support Inbox & Replies</h3></div>
+        <div id="adminSupportInbox"></div>
+      </div>
+    </div>
+    </main>
+           <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",
+      authDomain: "online-taskhub.firebaseapp.com",
+      projectId: "online-taskhub",
+      storageBucket: "online-taskhub.firebasestorage.app",
+      messagingSenderId: "734218697992",
+      appId: "1:734218697992:web:7c7c0f...",
+      measurementId: "G-7W4XYRC1YQ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentUser = JSON.parse(localStorage.getItem('taskmint_user')) || null;
+
+    let num1 = Math.floor(Math.random() * 10) + 1;
+    let num2 = Math.floor(Math.random() * 10) + 1;
+    let correctCaptchaAnswer = num1 + num2;
+    document.getElementById('captchaLabel').innerText = `Solve Math: ${num1} + ${num2} = ?`;
+
+    if (currentUser) {
+      document.getElementById('auth-screen').style.display = 'none';
+      initUserSession();
+    }
+
+    function switchAuthTab(tab) {
+      if (tab === 'login') {
+        document.getElementById('tabLogin').classList.add('active');
+        document.getElementById('tabSignup').classList.remove('active');
+        document.getElementById('formLogin').style.display = 'block';
+        document.getElementById('formSignup').style.display = 'none';
+      } else {
+        document.getElementById('tabSignup').classList.add('active');
+        document.getElementById('tabLogin').classList.remove('active');
+        document.getElementById('formSignup').style.display = 'block';
+        document.getElementById('formLogin').style.display = 'none';
+      }
+    }
+
+    async function handleLogin() {
+      let email = document.getElementById('loginEmail').value.trim().toLowerCase();
+      let pass = document.getElementById('loginPass').value.trim();
+
+      if (!email || !pass) {
+        alert("Please enter both Gmail and password.");
+        return;
+      }
+
+      let docId = email.replace(/[^a-zA-Z0-9]/g, "_");
+
+      try {
+        let docRef = db.collection("users").doc(docId);
+        let docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+          if (email === "mf3767189@gmail.com" && pass === "112211") {
+            currentUser = { email: email, pass: pass, balance: 0, tasks: 0, userId: "TM-ADMIN" };
+            await docRef.set(currentUser);
+          } else {
+            alert("Account does not exist! Please register first.");
+            return;
+          }
+        } else {
+          let userData = docSnap.data();
+          if (userData.pass !== pass) {
+            alert("Invalid Password!");
+            return;
+          }
+          currentUser = userData;
+          if (!currentUser.userId) {
+            currentUser.userId = email === "mf3767189@gmail.com" ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
+            await docRef.update({ userId: currentUser.userId });
+          }
         }
 
-        window.handleSignup = async function() {
-            let email = document.getElementById('signupEmail').value.trim();
-            let password = document.getElementById('signupPassword').value;
-            let captchaVal = parseInt(document.getElementById('captchaAnswer').value);
+        localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+        document.getElementById('auth-screen').style.display = 'none';
+        initUserSession();
+      } catch (err) {
+        console.error(err);
+        alert("Login error: " + err.message);
+      }
+    }
 
-            if (!email || !password) {
-                alert('براہ کرم جی میل اور پاسورڈ درج کریں۔');
-                return;
-            }
-            if (captchaVal !== (num1 + num2)) {
-                alert('کیپچا کا جواب غلط ہے۔');
-                return;
-            }
+    async function handleSignup() {
+      let email = document.getElementById('signupEmail').value.trim().toLowerCase();
+      let pass = document.getElementById('signupPass').value.trim();
+      let userCaptcha = parseInt(document.getElementById('signupCaptcha').value);
 
-            let docId = email.replace(/[^a-zA-Z0-9]/g, "_");
+      if (!email || !email.includes('@')) {
+        alert("Please enter a valid Gmail address.");
+        return;
+      }
+      if (!pass || pass.length < 6) {
+        alert("Password must be at least 6 characters long!");
+        return;
+      }
+      if (isNaN(userCaptcha) || userCaptcha !== correctCaptchaAnswer) {
+        alert("Incorrect Math Captcha answer! Please try again.");
+        return;
+      }
 
-            let userData = {
-                email: email,
-                password: password,
-                balance: 0.00,
-                createdAt: new Date().toISOString()
-            };
+      let docId = email.replace(/[^a-zA-Z0-9]/g, "_");
 
-            try {
-                await setDoc(doc(db, "users", docId), userData);
-                alert('سائن اپ کامیاب ہو گیا!');
-                currentUser = userData;
-                initUserDashboard();
-            } catch (e) {
-                console.error(e);
-                localStorage.setItem('taskmint_user', JSON.stringify(userData));
-                currentUser = userData;
-                initUserDashboard();
-            }
+      try {
+        let docRef = db.collection("users").doc(docId);
+        let docSnap = await docRef.get();
+        if (docSnap.exists) {
+          alert("Account already exists with this Gmail! Please login.");
+          switchAuthTab('login');
+          return;
         }
 
-        window.handleLogin = async function() {
-            let email = document.getElementById('loginEmail').value.trim();
-            let password = document.getElementById('loginPassword').value;
+        let generatedUserId = email === "mf3767189@gmail.com" ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
+        currentUser = { email: email, pass: pass, balance: 0, tasks: 0, userId: generatedUserId };
+        await docRef.set(currentUser);
+        localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
-            if (!email || !password) {
-                alert('جی میل اور پاسورڈ درج کریں۔');
-                return;
-            }
+        alert("Account created successfully!");
+        document.getElementById('auth-screen').style.display = 'none';
+        initUserSession();
+      } catch (err) {
+        console.error(err);
+        alert("Signup error: " + err.message);
+      }
+    }
 
-            let docId = email.replace(/[^a-zA-Z0-9]/g, "_");
+    function updateWithdrawFields() {
+      let method = document.getElementById('wMethod').value;
+      if (method === 'Binance') {
+        document.getElementById('lblField1').innerText = "Binance Nickname";
+        document.getElementById('wField1').placeholder = "e.g. CryptoKing";
+        document.getElementById('lblField2').innerText = "Binance ID / Pay ID";
+        document.getElementById('wField2').placeholder = "e.g. 123456789";
+      } else {
+        document.getElementById('lblField1').innerText = "Account Name";
+        document.getElementById('wField1').placeholder = "e.g. Muhammad Faisal";
+        document.getElementById('lblField2').innerText = "Account Number";
+        document.getElementById('wField2').placeholder = "e.g. 03176776279";
+      }
+    }
 
-            try {
-                let docRef = doc(db, "users", docId);
-                let docSnap = await getDoc(docRef);
+    function initUserSession() {
+      document.getElementById('welcomeMsg').innerHTML = `Welcome! <span style="background: rgba(109,40,217,0.2); color: #a78bfa; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 4px;">ID: ${currentUser.userId || 'TM-1000'}</span>`;
+      document.getElementById('userAvatar').innerText = currentUser.userId ? currentUser.userId.substring(0,2) : "TM";
+      document.getElementById('bal').innerText = Number(currentUser.balance).toFixed(2);
+      document.getElementById('doneCount').innerText = currentUser.tasks;
+      document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 
-                if (docSnap.exists() && docSnap.data().password === password) {
-                    currentUser = docSnap.data();
-                    initUserDashboard();
-                } else {
-                    alert('غلط جی میل یا پاسورڈ!');
-                }
-            } catch (e) {
-                let localUser = JSON.parse(localStorage.getItem('taskmint_user'));
-                if (localUser && localUser.email === email && localUser.password === password) {
-                    currentUser = localUser;
-                    initUserDashboard();
-                } else {
-                    alert('لاگ ان ناکام ہو گیا۔');
-                }
-            }
+      let trackingId = currentUser.userId || 'User';
+      document.getElementById('offerwallFrame').src = `https://offerwall.me/embed/p8Su32wpzXb1JMoOZpAbIIYXMDE9fP?user_id=${trackingId}`;
+      document.getElementById('ptpFrame').src = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${trackingId}&subId=${trackingId}`;
+
+      if (currentUser.email === "mf3767189@gmail.com") {
+        if (!document.getElementById('adminNavLink')) {
+          let adminNav = document.createElement('li');
+          adminNav.id = 'adminNavLink';
+          adminNav.innerHTML = `<a onclick="showPage('admin-panel', this)"><i class="fa-solid fa-gauge-high"></i> Admin Panel</a>`;
+          document.getElementById('navLinks').appendChild(adminNav);
         }
+        loadAdminPanelData();
+      }
+      loadSupportHistory();
+      loadUserWithdrawHistory();
+      loadBroadcast();
+    }
 
-        function initUserDashboard() {
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('dashboardSection').style.display = 'flex';
+    function logout() {
+      localStorage.removeItem('taskmint_user');
+      location.reload();
+    }
 
-            document.getElementById('userEmailDisplay').innerText = currentUser.email;
-            document.getElementById('userBalance').innerText = currentUser.balance.toFixed(2);
-            
-            if (currentUser.email === 'mf3767189@gmail.com') {
-                document.getElementById('adminNavTab').style.display = 'block';
-            }
+    function showPage(id, el) {
+      document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (el) el.classList.add('active');
+      if (window.innerWidth <= 900) toggleMenu();
+    }
 
-            let trackingId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
-            let offerwallUrl = `https://offerwall.me/embed/p8Su32wpzXb1JMoOZpAbIIYXMDE9fP?user_id=${trackingId}`;
-            document.getElementById('offerwallFrame').src = offerwallUrl;
+    function toggleMenu() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('overlay').classList.toggle('open');
+    }
 
-            let ptpUrl = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${trackingId}&subId=${trackingId}`;
-            document.getElementById('ptpFrame').src = ptpUrl;
+    function copyRef() {
+      const inp = document.getElementById('refInput');
+      inp.select();
+      navigator.clipboard.writeText(inp.value);
+      alert('Lifetime referral link copied!');
+    }
+
+    async function submitWithdrawal() {
+      let method = document.getElementById('wMethod').value;
+      let field1 = document.getElementById('wField1').value.trim();
+      let field2 = document.getElementById('wField2').value.trim();
+      let amount = parseFloat(document.getElementById('wAmount').value);
+
+      if (!field1 || !field2 || isNaN(amount)) {
+        alert("Please fill all details correctly.");
+        return;
+      }
+      if (amount < 5) {
+        alert("Minimum withdrawal is $5.");
+        return;
+      }
+      if (currentUser.balance < amount) {
+        alert("Insufficient balance!");
+        return;
+      }
+
+      currentUser.balance -= amount;
+      let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
+      await db.collection("users").doc(docId).update({ balance: currentUser.balance });
+      localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+
+      let req = { email: currentUser.email, userId: currentUser.userId, method, field1, field2, amount: amount.toFixed(2), status: 'Pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+      await db.collection("withdraws").add(req);
+
+      alert("Withdrawal request submitted successfully!");
+      document.getElementById('wField1').value = '';
+      document.getElementById('wField2').value = '';
+      document.getElementById('wAmount').value = '';
+      initUserSession();
+    }
+
+    async function loadUserWithdrawHistory() {
+      let html = '';
+      try {
+        let snapshot = await db.collection("withdraws").where("email", "==", currentUser.email).get();
+        if (snapshot.empty) {
+          html = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No withdrawal history yet</td></tr>`;
+        } else {
+          snapshot.forEach(doc => {
+            let r = doc.data();
+            html += `<tr>
+              <td>${r.method}</td>
+              <td>${r.field1} (${r.field2})</td>
+              <td style="color:var(--red); font-weight:700;">-$${r.amount}</td>
+              <td><span class="badge-${r.status.toLowerCase()}">${r.status}</span></td>
+            </tr>`;
+          });
         }
+      } catch (e) {
+        html = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">Loading history...</td></tr>`;
+      }
+      document.getElementById('userWithdrawHistory').innerHTML = html;
+    }
 
-        window.switchTab = function(tabName) {
-            document.querySelectorAll('.tab-content-item').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.sidebar .nav-link').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(`tab-${tabName}`).style.display = 'block';
-            event.currentTarget.classList.add('active');
+    async function sendSupportMessage() {
+      let text = document.getElementById('msgText').value.trim();
+      if (!text) return;
+      await db.collection("support").add({
+        email: currentUser.email,
+        userId: currentUser.userId,
+        text: text,
+        reply: '',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      document.getElementById('msgText').value = '';
+      alert("Message sent to Admin!");
+      loadSupportHistory();
+    }
 
-            if(tabName === 'admin') {
-                loadAdminPanelData();
-            }
+    async function loadSupportHistory() {
+      let html = '<h4>Your Support Tickets & Replies</h4>';
+      try {
+        let snapshot = await db.collection("support").where("email", "==", currentUser.email).get();
+        snapshot.forEach(doc => {
+          let m = doc.data();
+          html += `<div style="background:#252525; padding:10px; border-radius:8px; margin-top:8px; font-size:0.85rem; border: 1px solid var(--border);">
+            <strong>You:</strong> ${m.text}<br>
+            <strong style="color:var(--green);">Admin Reply:</strong> ${m.reply ? m.reply : '<span style="color:var(--muted);">Waiting for admin response...</span>'}
+          </div>`;
+        });
+      } catch(e) {}
+      document.getElementById('userSupportHistory').innerHTML = html;
+    }
+
+    async function loadBroadcast() {
+      try {
+        let doc = await db.collection("settings").doc("broadcast").get();
+        if (doc.exists) {
+          let msg = doc.data().text;
+          document.getElementById('broadcastText').innerText = msg;
         }
+      } catch(e) {}
+    }
 
-        window.requestWithdraw = function() {
-            let amount = parseFloat(document.getElementById('withdrawAmount').value);
-            if (!amount || amount < 5.00) {
-                alert('کم از کم ودھڈرا کی حد $5.00 ہے۔');
-                return;
-            }
-            if (amount > currentUser.balance) {
-                alert('آپ کے پاس ناکافی بیلنس ہے۔');
-                return;
-            }
-            alert('آپ کی ودھڈرا کی درخواست کامیابی سے جمع ہو گئی ہے۔');
-            currentUser.balance -= amount;
-            document.getElementById('userBalance').innerText = currentUser.balance.toFixed(2);
-        }
+    async function loadAdminPanelData() {
+      let uHtml = '';
+      let usersSnap = await db.collection("users").get();
+      usersSnap.forEach(doc => {
+        let u = doc.data();
+        uHtml += `<tr><td><span style="background:rgba(109,40,217,0.2); color:#a78bfa; padding:2px 6px; border-radius:4px; font-weight:600;">${u.userId || 'N/A'}</span></td><td>${u.email}</td><td>$${Number(u.balance).toFixed(2)}</td><td>${u.tasks}</td></tr>`;
+      });
+      document.getElementById('adminUsersTable').innerHTML = uHtml;
 
-        async function loadAdminPanelData() {
-            let container = document.getElementById('adminDataList');
-            container.innerHTML = `<p class="text-success">ایڈمن پینل لائیو فعال ہے (ای میل: mf3767189@gmail.com)</p>`;
-            try {
-                let querySnapshot = await getDocs(collection(db, "users"));
-                let html = `<table class="table table-dark table-striped"><thead><tr><th>جی میل</th><th>بیلنس</th></tr></thead><tbody>`;
-                querySnapshot.forEach((doc) => {
-                    let u = doc.data();
-                    html += `<tr><td>${u.email}</td><td>$${u.balance}</td></tr>`;
-                });
-                html += `</tbody></table>`;
-                container.innerHTML += html;
-            } catch(e) {
-                container.innerHTML += `<p class="text-muted">ڈیٹا بیس سے فی الحال ڈیٹا لوڈ نہیں ہو سکا۔</p>`;
-            }
-        }
+      let wHtml = '';
+      let wSnap = await db.collection("withdraws").get();
+      wSnap.forEach(doc => {
+        let req = doc.data();
+        let docId = doc.id;
+        wHtml += `<tr>
+          <td>${req.userId || req.email}</td>
+          <td>${req.method}</td>
+          <td>${req.field1}</td>
+          <td>${req.field2}</td>
+          <td style="color:var(--red); font-weight:700;">-$${req.amount}</td>
+          <td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td>
+          <td>
+            ${req.status === 'Pending' ? `
+              <button onclick="changeWithdrawStatus('${docId}', 'Approved')" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>
+              <button onclick="changeWithdrawStatus('${docId}', 'Rejected')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Reject</button>
+            ` : 'Completed'}
+          </td>
+        </tr>`;
+      });
+      document.getElementById('adminWithdrawTable').innerHTML = wHtml;
 
-        window.handleLogout = function() {
-            currentUser = null;
-            location.reload();
-        }
-    </script>
+      let sHtml = '';
+      let sSnap = await db.collection("support").get();
+      sSnap.forEach(doc => {
+        let msg = doc.data();
+        let docId = doc.id;
+        sHtml += `<div style="background:#252525; padding:12px; border-radius:8px; margin-bottom:10px; font-size:0.85rem; border:1px solid var(--border);">
+          <strong>From (ID):</strong> ${msg.userId || msg.email}<br>
+          <strong>Message:</strong> ${msg.text}<br>
+          <div style="margin-top:6px; display:flex; gap:6px;">
+            <input type="text" id="reply_${docId}" class="form-control" placeholder="Type reply..." value="${msg.reply}">
+            <button class="action-btn" onclick="sendAdminReply('${docId}')">Send Reply</button>
+          </div>
+        </div>`;
+      });
+      document.getElementById('adminSupportInbox').innerHTML = sHtml;
+    }
+
+    async function changeWithdrawStatus(docId, status) {
+      await db.collection("withdraws").doc(docId).update({ status: status });
+      loadAdminPanelData();
+      alert("Withdrawal status updated!");
+    }
+
+    async function sendAdminReply(docId) {
+      let replyText = document.getElementById(`reply_${docId}`).value;
+      await db.collection("support").doc(docId).update({ reply: replyText });
+      loadAdminPanelData();
+      alert("Reply sent successfully!");
+    }
+
+    async function saveBroadcast() {
+      let text = document.getElementById('adminBroadcastInput').value;
+      if (!text) return;
+      await db.collection("settings").doc("broadcast").set({ text: text });
+      document.getElementById('broadcastText').innerText = text;
+      alert("Broadcast message updated successfully!");
+    }
+  </script>
 </body>
-</html>
+    </html>
+    

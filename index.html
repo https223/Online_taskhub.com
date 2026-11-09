@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -89,7 +89,7 @@
     }
 
     .stats-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
     }
     .stat-card {
       background: var(--card); padding: 16px; border-radius: 14px;
@@ -103,8 +103,9 @@
     .ic-purple { background: rgba(109, 40, 217, 0.2); color: #a78bfa; }
     .ic-green { background: rgba(5, 150, 105, 0.2); color: #34d399; }
     .ic-pink { background: rgba(219, 39, 119, 0.2); color: #f472b6; }
+    .ic-yellow { background: rgba(234, 179, 8, 0.2); color: #facc15; }
     .stat-info span { font-size: 0.78rem; color: var(--muted); display: block; }
-    .stat-info h3 { font-size: 1.25rem; font-weight: 800; margin-top: 2px; }
+    .stat-info h3 { font-size: 1.1rem; font-weight: 800; margin-top: 2px; }
 
     .broadcast-banner {
       background: rgba(30, 64, 175, 0.2); border: 1px solid #1e40af; color: #93c5fd; padding: 14px 18px;
@@ -198,9 +199,8 @@
         <button class="auth-submit" onclick="handleSignup()" style="background: var(--green);">Create Account</button>
       </div>
     </div>
-  </div>
-
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+            </div>
+              <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
   <aside class="sidebar" id="sidebar">
     <div>
@@ -242,15 +242,19 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon ic-purple"><i class="fa-solid fa-wallet"></i></div>
-          <div class="stat-info"><span>Current Balance</span><h3>$<span id="bal">0.00</span></h3></div>
+          <div class="stat-info"><span>Total Balance</span><h3 id="dashTotalBalance">$0.00</h3></div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon ic-green"><i class="fa-solid fa-circle-check"></i></div>
-          <div class="stat-info"><span>Completed Offers</span><h3 id="doneCount">0</h3></div>
+          <div class="stat-icon ic-green"><i class="fa-solid fa-link"></i></div>
+          <div class="stat-info"><span>PTP Earnings</span><h3 id="dashPtpEarn">$0.00</h3></div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon ic-pink"><i class="fa-solid fa-users"></i></div>
-          <div class="stat-info"><span>Referrals Count</span><h3 id="refCount">0</h3></div>
+          <div class="stat-icon ic-pink"><i class="fa-solid fa-gift"></i></div>
+          <div class="stat-info"><span>Offer Earnings</span><h3 id="dashOfferEarn">$0.00</h3></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon ic-yellow"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-info"><span>Referrals</span><h3 id="dashRefCount">0</h3></div>
         </div>
       </div>
 
@@ -260,15 +264,14 @@
           <input type="text" id="refInput" readonly />
           <button class="copy-btn" onclick="copyRef()">Copy</button>
         </div>
-        <p style="font-size: 0.78rem; color: var(--muted);">🎁 Earn 10% lifetime commission from your referrals' earnings (deducted from admin share)</p>
+        <p style="font-size: 0.78rem; color: var(--muted);">🎁 Earn 10% lifetime commission from your referrals' earnings</p>
       </div>
     </div>
-
-    <div id="tasks" class="page-section">
+        <div id="tasks" class="page-section">
       <div class="card" style="text-align: center; padding: 30px 20px;">
         <div class="card-header" style="justify-content: center;"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Live PTP Traffic Link</h3></div>
         <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">Visit the PTP link below to view tasks and earn rewards securely tracked with your unique User ID.</p>
-        <p style="font-size: 0.82rem; color: #34d399; margin-bottom: 20px;"><i class="fa-solid fa-circle-info"></i> Note: You get 60% of your total verified PTP visits credited directly by the Admin.</p>
+        <p style="font-size: 0.82rem; color: #34d399; margin-bottom: 20px;"><i class="fa-solid fa-circle-info"></i> Note: Rewards are credited directly by the Admin.</p>
         <a id="ptpLinkBtn" href="#" target="_blank" class="action-btn" style="padding: 14px 30px; font-size: 1rem; font-weight: 700; border-radius: 12px; background: var(--green);">Start PTP Visit <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></a>
       </div>
     </div>
@@ -277,10 +280,8 @@
       <div class="card" style="padding: 14px; height: 82vh; display: flex; flex-direction: column;">
         <div class="card-header" style="margin-bottom: 8px;">
           <h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offerwall</h3>
-          <span style="font-size: 0.75rem; color: var(--green);">User: 60% | Referrer: 10% Commission</span>
         </div>
         <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">Complete offers directly inside the portal below. Automatically secured with Signed User ID!</p>
-        <!-- Embedded Iframe for Offerwall with Signed URL -->
         <iframe id="offerwallIframe" src="" style="width: 100%; flex: 1; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
       </div>
     </div>
@@ -314,7 +315,7 @@
         </div>
         <div class="form-group">
           <label>Amount in USD ($) (Min $5)</label>
-          <input type="number" step="0.01" id="wAmount" class="form-control" placeholder="5.00" />
+          <input type="number" step="any" id="wAmount" class="form-control" placeholder="5.00" />
         </div>
         <button class="withdraw-submit" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
       </div>
@@ -352,7 +353,7 @@
     <div id="admin-panel" class="page-section">
       <div class="card" style="background: #1e1b4b; color: #fff;">
         <h2><i class="fa-solid fa-shield-halved"></i> Admin Master Dashboard</h2>
-        <p style="font-size:0.85rem; color:#cbd5e1;">Manage user PTP stats, balances, and payouts: mf3767189@gmail.com</p>
+        <p style="font-size:0.85rem; color:#cbd5e1;">Manage user IP, details, balances, and separate payments: mf3767189@gmail.com</p>
       </div>
 
       <div class="card">
@@ -362,16 +363,20 @@
       </div>
 
       <div class="card">
-        <div class="card-header"><h3>Users PTP Stats & Balance Management (60% Update)</h3></div>
-        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">Check user's PTP performance on Offerwall.me stats, then update their balance and completed tasks here.</p>
+        <div class="card-header"><h3>Workers Record, IP & Separate Payment Management</h3></div>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 12px;">Review worker IP, activity status, PTP/Offer/Task stats and update custom earnings.</p>
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
-                <th>User ID & Email</th>
-                <th>Current Balance ($)</th>
-                <th>Tasks / PTP Count</th>
-                <th>Add PTP Earnings (60%)</th>
+                <th>Gmail & Status</th>
+                <th>IP Address</th>
+                <th>Tasks Done</th>
+                <th>Offer Earn</th>
+                <th>PTP Earn</th>
+                <th>Total Balance</th>
+                <th>Manage Payments (Pay)</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="adminUsersTable"></tbody>
@@ -420,6 +425,8 @@
     const db = firebase.firestore();
 
     let currentUser = JSON.parse(localStorage.getItem('taskmint_user')) || null;
+    const ADMIN_EMAIL = "mf3767189@gmail.com";
+    const REFERRAL_COMMISSION_RATE = 0.10;
 
     let num1 = Math.floor(Math.random() * 10) + 1;
     let num2 = Math.floor(Math.random() * 10) + 1;
@@ -451,6 +458,12 @@
       }
     }
 
+    function formatMoney(val) {
+      let num = parseFloat(val) || 0;
+      if (num === 0) return "0.00";
+      return num.toFixed(9).replace(/\.?0+$/, "");
+    }
+
     async function handleLogin() {
       let email = document.getElementById('loginEmail').value.trim().toLowerCase();
       let pass = document.getElementById('loginPass').value.trim();
@@ -467,8 +480,8 @@
         let docSnap = await docRef.get();
 
         if (!docSnap.exists) {
-          if (email === "mf3767189@gmail.com" && pass === "112211") {
-            currentUser = { email: email, pass: pass, balance: 0, tasks: 0, userId: "TM-ADMIN", referredBy: "" };
+          if (email === ADMIN_EMAIL && pass === "112211") {
+            currentUser = { email: email, pass: pass, totalBalance: 0, ptpEarnings: 0, offerEarnings: 0, taskEarnings: 0, tasks: 0, userId: "TM-ADMIN", referredBy: "" };
             await docRef.set(currentUser);
           } else {
             alert("Account does not exist! Please register first.");
@@ -482,7 +495,7 @@
           }
           currentUser = userData;
           if (!currentUser.userId) {
-            currentUser.userId = email === "mf3767189@gmail.com" ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
+            currentUser.userId = email === ADMIN_EMAIL ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
             await docRef.update({ userId: currentUser.userId });
           }
         }
@@ -525,10 +538,21 @@
           return;
         }
 
-        let generatedUserId = email === "mf3767189@gmail.com" ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
+        let generatedUserId = email === ADMIN_EMAIL ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
         let referredBy = localStorage.getItem('taskmint_ref') || "";
 
-        currentUser = { email: email, pass: pass, balance: 0, tasks: 0, userId: generatedUserId, referredBy: referredBy };
+        currentUser = { 
+          email: email, 
+          pass: pass, 
+          totalBalance: 0, 
+          ptpEarnings: 0, ptpPaid: 0,
+          offerEarnings: 0, offerPaid: 0,
+          taskEarnings: 0, taskPaid: 0,
+          tasks: 0, 
+          userId: generatedUserId, 
+          referredBy: referredBy,
+          completedTasks: []
+        };
         await docRef.set(currentUser);
         localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
@@ -540,8 +564,7 @@
         alert("Signup error: " + err.message);
       }
     }
-
-    function updateWithdrawFields() {
+          function updateWithdrawFields() {
       let method = document.getElementById('wMethod').value;
       if (method === 'Binance') {
         document.getElementById('lblField1').innerText = "Binance Nickname";
@@ -556,9 +579,8 @@
       }
     }
 
-    // Function to generate HMAC-SHA256 Signed Offerwall URL for Offerwall.me
     async function getSignedOfferwallUrl(publicKey, userId, secretKey) {
-      const expires = Math.floor(Date.now() / 1000) + 3600; // 1 hour expiry
+      const expires = Math.floor(Date.now() / 1000) + 3600;
       const message = `offerwall-user-v1\n${publicKey}\n${userId}\n${expires}`;
       
       const encoder = new TextEncoder();
@@ -578,7 +600,20 @@
 
     async function initUserSession() {
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
-      let freshDoc = await db.collection("users").doc(docId).get();
+      let ip = "Unknown";
+      try {
+        let res = await fetch('https://api.ipify.org?format=json');
+        let data = await res.json();
+        ip = data.ip;
+      } catch (e) {}
+
+      let userRef = db.collection("users").doc(docId);
+      await userRef.update({ 
+        ip: ip,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(async () => {});
+
+      let freshDoc = await userRef.get();
       if(freshDoc.exists) {
         currentUser = freshDoc.data();
         localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
@@ -586,22 +621,24 @@
 
       document.getElementById('welcomeMsg').innerHTML = `Welcome! <span style="background: rgba(109,40,217,0.2); color: #a78bfa; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 4px;">ID: ${currentUser.userId || 'TM-1000'}</span>`;
       document.getElementById('userAvatar').innerText = currentUser.userId ? currentUser.userId.substring(0,2) : "TM";
-      document.getElementById('bal').innerText = Number(currentUser.balance).toFixed(2);
-      document.getElementById('doneCount').innerText = currentUser.tasks || 0;
-      document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
+      
+      document.getElementById('dashTotalBalance').innerText = `$${formatMoney(currentUser.totalBalance || 0)}`;
+      document.getElementById('dashPtpEarn').innerText = `$${formatMoney(currentUser.ptpEarnings || 0)}`;
+      document.getElementById('dashOfferEarn').innerText = `$${formatMoney(currentUser.offerEarnings || 0)}`;
 
       try {
         let refSnap = await db.collection("users").where("referredBy", "==", currentUser.userId).get();
-        document.getElementById('refCount').innerText = refSnap.size;
+        document.getElementById('dashRefCount').innerText = refSnap.size;
       } catch(e) {
-        document.getElementById('refCount').innerText = 0;
+        document.getElementById('dashRefCount').innerText = 0;
       }
+
+      document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 
       let trackingId = currentUser.userId || 'User';
       let publicKey = "p8Su32wpzXb1JMoOZpAbIIYXMDE9fP";
       let secretKey = "nCwt7QwaJdX6psK2VyEt5SJTuh8ZMcbT";
 
-      // Generate signed URL and load inside iframe securely
       try {
         let signedUrl = await getSignedOfferwallUrl(publicKey, trackingId, secretKey);
         document.getElementById('offerwallIframe').src = signedUrl;
@@ -611,7 +648,7 @@
 
       document.getElementById('ptpLinkBtn').href = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${trackingId}&subId=${trackingId}`;
 
-      if (currentUser.email === "mf3767189@gmail.com") {
+      if (currentUser.email === ADMIN_EMAIL) {
         if (!document.getElementById('adminNavLink')) {
           let adminNav = document.createElement('li');
           adminNav.id = 'adminNavLink';
@@ -664,14 +701,14 @@
         alert("Minimum withdrawal is $5.");
         return;
       }
-      if (currentUser.balance < amount) {
+      if (currentUser.totalBalance < amount) {
         alert("Insufficient balance!");
         return;
       }
 
-      currentUser.balance -= amount;
+      currentUser.totalBalance -= amount;
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
-      await db.collection("users").doc(docId).update({ balance: currentUser.balance });
+      await db.collection("users").doc(docId).update({ totalBalance: currentUser.totalBalance });
       localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
       let req = { email: currentUser.email, userId: currentUser.userId, method, field1, field2, amount: amount.toFixed(2), status: 'Pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
@@ -753,15 +790,30 @@
       usersSnap.forEach(doc => {
         let u = doc.data();
         let targetDocId = doc.id;
+        let tasksDone = (u.completedTasks || []).length || u.tasks || 0;
+
+        let isActive = false;
+        if (u.lastLogin) {
+          let lastTime = u.lastLogin.toDate().getTime();
+          let now = new Date().getTime();
+          if ((now - lastTime) < 10 * 60 * 1000) isActive = true;
+        }
+        let statusBadge = isActive ? '<span class="badge-approved" style="font-size:10px; padding:2px 4px;">Active</span>' : '<span style="background:#333; color:#aaa; font-size:10px; padding:2px 4px; border-radius:4px;">Offline</span>';
+
         uHtml += `<tr>
-          <td><span style="background:rgba(109,40,217,0.2); color:#a78bfa; padding:2px 6px; border-radius:4px; font-weight:600;">${u.userId || 'N/A'}</span><br><small style="color:var(--muted);">${u.email}</small></td>
-          <td>$${Number(u.balance || 0).toFixed(2)}</td>
-          <td>${u.tasks || 0} Visits</td>
+          <td><span style="font-weight:bold;">${u.email}</span><br>${statusBadge}</td>
+          <td style="font-family:monospace; font-size:11px;">${u.ip || 'Unknown'}</td>
+          <td style="font-weight:bold; color:#a78bfa;">${tasksDone}</td>
+          <td style="color:#34d399;">$${formatMoney(u.offerEarnings || 0)}</td>
+          <td style="color:#60a5fa;">$${formatMoney(u.ptpEarnings || 0)}</td>
+          <td style="font-weight:bold;">$${formatMoney(u.totalBalance || 0)}</td>
           <td>
-            <div style="display:flex; gap:6px;">
-              <input type="number" step="0.0001" id="add_amt_${targetDocId}" class="form-control" placeholder="Amount ($)" style="width:90px;" />
-              <button class="action-btn" onclick="addPtpEarningsToUser('${targetDocId}')" style="background:var(--green);">Add 60%</button>
-            </div>
+            <input type="number" step="any" id="payTask_${targetDocId}" value="${u.taskPaid || 0}" placeholder="Task Pay" class="form-control" style="width:75px; padding:4px; font-size:11px; margin-bottom:2px;" />
+            <input type="number" step="any" id="payOffer_${targetDocId}" value="${u.offerPaid || 0}" placeholder="Offer Pay" class="form-control" style="width:75px; padding:4px; font-size:11px; margin-bottom:2px;" />
+            <input type="number" step="any" id="payPtp_${targetDocId}" value="${u.ptpPaid || 0}" placeholder="PTP Pay" class="form-control" style="width:75px; padding:4px; font-size:11px;" />
+          </td>
+          <td>
+            <button class="action-btn" onclick="saveUserPayments('${targetDocId}')" style="background:var(--green); padding:6px 10px; font-size:11px;">Save</button>
           </td>
         </tr>`;
       });
@@ -806,47 +858,21 @@
       document.getElementById('adminSupportInbox').innerHTML = sHtml;
     }
 
-    async function addPtpEarningsToUser(targetDocId) {
-      let inputVal = parseFloat(document.getElementById(`add_amt_${targetDocId}`).value);
-      if (isNaN(inputVal) || inputVal <= 0) {
-        alert("Please enter a valid amount to add.");
-        return;
-      }
-
+    async function saveUserPayments(targetDocId) {
+      let taskPaid = parseFloat(document.getElementById(`payTask_${targetDocId}`).value) || 0;
+      let offerPaid = parseFloat(document.getElementById(`payOffer_${targetDocId}`).value) || 0;
+      let ptpPaid = parseFloat(document.getElementById(`payPtp_${targetDocId}`).value) || 0;
+      
       try {
-        let userRef = db.collection("users").doc(targetDocId);
-        let userDoc = await userRef.get();
-        if(userDoc.exists) {
-          let userData = userDoc.data();
-          let currentBal = Number(userData.balance || 0);
-          let currentTasks = Number(userData.tasks || 0);
-          
-          let newBal = currentBal + inputVal;
-          let newTasks = currentTasks + 1;
-
-          await userRef.update({ 
-            balance: newBal,
-            tasks: newTasks
-          });
-
-          if (userData.referredBy) {
-            let refQuery = await db.collection("users").where("referredBy", "==", userData.referredBy).get();
-            if (!refQuery.empty) {
-              let refDoc = refQuery.docs[0];
-              let refData = refDoc.data();
-              let refCommission = inputVal * 0.10;
-              await refDoc.ref.update({
-                balance: Number(refData.balance || 0) + refCommission
-              });
-            }
-          }
-
-          alert("User balance, PTP stats and referral commission updated successfully!");
-          loadAdminPanelData();
-        }
+        await db.collection("users").doc(targetDocId).update({
+          taskPaid: taskPaid,
+          offerPaid: offerPaid,
+          ptpPaid: ptpPaid
+        });
+        alert("User payments and records successfully updated!");
+        loadAdminPanelData();
       } catch(err) {
-        console.error(err);
-        alert("Error updating user balance: " + err.message);
+        alert("Error updating payment: " + err.message);
       }
     }
 
@@ -872,5 +898,4 @@
     }
   </script>
 </body>
-  </html>
-  
+</html>

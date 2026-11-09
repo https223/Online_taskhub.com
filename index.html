@@ -120,6 +120,13 @@
     }
     .card-header h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
+    .task-item {
+      display: flex; justify-content: space-between; align-items: center; padding: 12px 14px;
+      background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px;
+    }
+    .task-info h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
+    .task-info p { font-size: 0.78rem; color: var(--muted); }
+
     .ref-box { display: flex; gap: 8px; margin: 10px 0; }
     .ref-box input {
       flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
@@ -207,7 +214,8 @@
       <div class="brand"><i class="fa-solid fa-coins"></i> TaskMint</div>
       <ul class="nav-links" id="navLinks">
         <li><a class="active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</a></li>
-        <li><a onclick="showPage('offerwall', this)"><i class="fa-solid fa-gift"></i> Live Offerwall</a></li>
+        <li><a onclick="showPage('tasks', this)"><i class="fa-solid fa-list-check"></i> Task Section</a></li>
+        <li><a onclick="showPage('offers', this)"><i class="fa-solid fa-gift"></i> Offer Section</a></li>
         <li><a onclick="showPage('withdraw', this)"><i class="fa-solid fa-wallet"></i> Withdraw</a></li>
         <li><a onclick="showPage('support', this)"><i class="fa-solid fa-headset"></i> Support</a></li>
       </ul>
@@ -227,7 +235,7 @@
         <div class="welcome" id="welcomeMsg">Welcome!</div>
       </div>
       <div class="topbar-right">
-        <div class="avatar" id="userAvatar">MF</div>
+        <div class="avatar" id="userAvatar">TM</div>
         <button onclick="logout()" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer;">Logout</button>
       </div>
     </div>
@@ -263,9 +271,43 @@
       </div>
     </div>
 
-    <div id="offerwall" class="page-section">
+    <!-- Task Section: PTP, Smart Links & Microtasks -->
+    <div id="tasks" class="page-section">
       <div class="card">
-        <div class="card-header"><h3>Bitcotasks Live Offerwall</h3></div>
+        <div class="card-header"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Micro Tasks & Smart Links (PTP)</h3></div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">Complete quick micro tasks, visit smart links, and earn instant rewards.</p>
+        
+        <div class="task-item">
+          <div class="task-info">
+            <h4>PTP Traffic Link #1</h4>
+            <p>Visit link & stay for 15 seconds to earn reward.</p>
+          </div>
+          <button class="action-btn" onclick="alert('Task opened! Complete verification to earn.')">Start Task</button>
+        </div>
+
+        <div class="task-item">
+          <div class="task-info">
+            <h4>Smart Link Click & View</h4>
+            <p>Browse sponsor page and complete short captcha.</p>
+          </div>
+          <button class="action-btn" onclick="alert('Task opened! Complete verification to earn.')">Start Task</button>
+        </div>
+
+        <div class="task-item">
+          <div class="task-info">
+            <h4>Social Media Engagement</h4>
+            <p>Like and follow our partner channels.</p>
+          </div>
+          <button class="action-btn" onclick="alert('Task opened! Complete verification to earn.')">Start Task</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Offer Section: Surveys & Big Offers -->
+    <div id="offers" class="page-section">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offers</h3></div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;">Complete high-paying surveys, app installs, and big offers below.</p>
         <iframe id="offerwallFrame" style="width:100%; height:700px; border:none; border-radius:12px;" scrolling="yes" frameborder="0" src=""></iframe>
       </div>
     </div>
@@ -381,15 +423,8 @@
             <tbody id="adminWithdrawTable"></tbody>
           </table>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><h3>User Support Inbox & Replies</h3></div>
-        <div id="adminSupportInbox"></div>
-      </div>
-    </div>
-                                                          </main>
-             <script>
+  </div>
+         <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",
       authDomain: "online-taskhub.firebaseapp.com",
@@ -529,13 +564,13 @@
     }
 
     function initUserSession() {
-      document.getElementById('welcomeMsg').innerHTML = `Welcome, ${currentUser.email}! <span style="background: #ede9fe; color: #6d28f9; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 6px;">ID: ${currentUser.userId || 'TM-1000'}</span>`;
-      document.getElementById('userAvatar').innerText = currentUser.email.substring(0,2).toUpperCase();
+      document.getElementById('welcomeMsg').innerHTML = `Welcome! <span style="background: #ede9fe; color: #6d28f9; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 4px;">ID: ${currentUser.userId || 'TM-1000'}</span>`;
+      document.getElementById('userAvatar').innerText = currentUser.userId ? currentUser.userId.substring(0,2) : "TM";
       document.getElementById('bal').innerText = Number(currentUser.balance).toFixed(2);
       document.getElementById('doneCount').innerText = currentUser.tasks;
-      document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.email}`;
+      document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 
-      let safeSubId = currentUser.email.replace(/[^a-zA-Z0-9_]/g, '_');
+      let safeSubId = currentUser.userId || 'User';
       document.getElementById('offerwallFrame').src = `https://bitcotasks.com/offerwall/zkt6xa29u366inmpko8sig7hxwg87o/${safeSubId}`;
 
       if (currentUser.email === "mf3767189@gmail.com") {
@@ -600,7 +635,7 @@
       await db.collection("users").doc(currentUser.email).update({ balance: currentUser.balance });
       localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
-      let req = { email: currentUser.email, method, field1, field2, amount: amount.toFixed(2), status: 'Pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+      let req = { email: currentUser.email, userId: currentUser.userId, method, field1, field2, amount: amount.toFixed(2), status: 'Pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
       await db.collection("withdraws").add(req);
 
       alert("Withdrawal request submitted successfully!");
@@ -638,6 +673,7 @@
       if (!text) return;
       await db.collection("support").add({
         email: currentUser.email,
+        userId: currentUser.userId,
         text: text,
         reply: '',
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -687,7 +723,7 @@
         let req = doc.data();
         let docId = doc.id;
         wHtml += `<tr>
-          <td>${req.email}</td>
+          <td>${req.userId || req.email}</td>
           <td>${req.method}</td>
           <td>${req.field1}</td>
           <td>${req.field2}</td>
@@ -709,7 +745,7 @@
         let msg = doc.data();
         let docId = doc.id;
         sHtml += `<div style="background:#f8fafc; padding:12px; border-radius:8px; margin-bottom:10px; font-size:0.85rem;">
-          <strong>From:</strong> ${msg.email}<br>
+          <strong>From (ID):</strong> ${msg.userId || msg.email}<br>
           <strong>Message:</strong> ${msg.text}<br>
           <div style="margin-top:6px; display:flex; gap:6px;">
             <input type="text" id="reply_${docId}" class="form-control" placeholder="Type reply..." value="${msg.reply}">
@@ -742,4 +778,5 @@
     }
   </script>
 </body>
-</html>
+  </html>
+  

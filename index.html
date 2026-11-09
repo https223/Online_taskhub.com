@@ -156,17 +156,18 @@
 </head>
 <body>
 
-  <!-- Clean Login Screen without pre-filled admin email/pass -->
+  <!-- Clean Auth Screen with Math Captcha -->
   <div id="auth-screen">
     <div class="auth-card">
       <h2>TaskMint Portal</h2>
-      <p>Login with your credentials or create a new account.</p>
+      <p>Login or create your new account.</p>
       
       <div class="auth-tabs">
         <div class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</div>
         <div class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Register</div>
       </div>
 
+      <!-- Login Form -->
       <div id="formLogin">
         <div class="form-group">
           <label>Gmail Address</label>
@@ -179,14 +180,19 @@
         <button class="auth-submit" onclick="handleLogin()">Login to Account</button>
       </div>
 
+      <!-- Signup Form with Math Captcha -->
       <div id="formSignup" style="display: none;">
         <div class="form-group">
           <label>Gmail Address</label>
           <input type="email" id="signupEmail" class="form-control" placeholder="yourgmail@gmail.com" />
         </div>
         <div class="form-group">
-          <label>Create Password</label>
-          <input type="password" id="signupPass" class="form-control" placeholder="******" />
+          <label>Create Password (Min 6 Characters)</label>
+          <input type="password" id="signupPass" class="form-control" placeholder="At least 6 chars" />
+        </div>
+        <div class="form-group">
+          <label id="captchaLabel">Solve Math: 3 + 4 = ?</label>
+          <input type="number" id="signupCaptcha" class="form-control" placeholder="Enter answer" />
         </div>
         <button class="auth-submit" onclick="handleSignup()" style="background: var(--green);">Create Account</button>
       </div>
@@ -377,19 +383,20 @@
       </div>
     </div>
             </main>
-          <script>
+            <script>
     let allUsers = JSON.parse(localStorage.getItem('taskmint_all_users')) || {};
-    if (!allUsers["mf3767189@gmail.com"]) {
-      allUsers["mf3767189@gmail.com"] = { email: "mf3767189@gmail.com", pass: "112211", balance: 0, tasks: 0 };
-      localStorage.setItem('taskmint_all_users', JSON.stringify(allUsers));
-    }
-
     let currentUser = JSON.parse(localStorage.getItem('taskmint_user')) || null;
     let withdrawRequests = JSON.parse(localStorage.getItem('taskmint_withdraws')) || [];
     let supportMessages = JSON.parse(localStorage.getItem('taskmint_support')) || [];
     let broadcastMsg = localStorage.getItem('taskmint_broadcast') || "Welcome to TaskMint! Complete offers and earn real cash.";
 
     document.getElementById('broadcastText').innerText = broadcastMsg;
+
+    // Generate random math captcha on load
+    let num1 = Math.floor(Math.random() * 10) + 1;
+    let num2 = Math.floor(Math.random() * 10) + 1;
+    let correctCaptchaAnswer = num1 + num2;
+    document.getElementById('captchaLabel').innerText = `Solve Math: ${num1} + ${num2} = ?`;
 
     if (currentUser) {
       document.getElementById('auth-screen').style.display = 'none';
@@ -414,8 +421,13 @@
       let email = document.getElementById('loginEmail').value.trim().toLowerCase();
       let pass = document.getElementById('loginPass').value.trim();
 
+      if (!email || !pass) {
+        alert("Please enter both Gmail and password.");
+        return;
+      }
+
       if (!allUsers[email] || allUsers[email].pass !== pass) {
-        alert("Invalid Gmail or Password!");
+        alert("Invalid Gmail or Password! Please register if you don't have an account.");
         return;
       }
 
@@ -428,9 +440,18 @@
     function handleSignup() {
       let email = document.getElementById('signupEmail').value.trim().toLowerCase();
       let pass = document.getElementById('signupPass').value.trim();
+      let userCaptcha = parseInt(document.getElementById('signupCaptcha').value);
 
-      if (!email || !email.includes('@') || !pass) {
-        alert("Please enter a valid Gmail and password.");
+      if (!email || !email.includes('@')) {
+        alert("Please enter a valid Gmail address.");
+        return;
+      }
+      if (!pass || pass.length < 6) {
+        alert("Password must be at least 6 characters long!");
+        return;
+      }
+      if (isNaN(userCaptcha) || userCaptcha !== correctCaptchaAnswer) {
+        alert("Incorrect Math Captcha answer! Please try again.");
         return;
       }
       if (allUsers[email]) {
@@ -444,6 +465,7 @@
       localStorage.setItem('taskmint_all_users', JSON.stringify(allUsers));
       localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
+      alert("Account created successfully!");
       document.getElementById('auth-screen').style.display = 'none';
       initUserSession();
     }

@@ -9,14 +9,16 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .navbar, .card { background-color: #1e1e1e !important; border-color: #2c2c2c !important; }
-        .form-control { background-color: #2c2c2c; color: #fff; border: 1px solid #444; }
-        .form-control:focus { background-color: #2c2c2c; color: #fff; border-color: #0d6efd; box-shadow: none; }
+        body { background-color: #121212; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar, .card { background-color: #1e1e1e !important; color: #ffffff !important; border-color: #2c2c2c !important; }
+        .form-label { color: #ffffff !important; font-weight: 600; }
+        .form-control { background-color: #2c2c2c !important; color: #ffffff !important; border: 1px solid #555 !important; }
+        .form-control::placeholder { color: #bbbbbb !important; opacity: 1; }
+        .form-control:focus { background-color: #2c2c2c !important; color: #ffffff !important; border-color: #0d6efd !important; box-shadow: none; }
         .btn-primary { background-color: #0d6efd; border: none; }
         .sidebar { min-height: 100vh; background-color: #181818; border-left: 1px solid #2c2c2c; }
-        .nav-link { color: #aaa; border-radius: 5px; margin-bottom: 5px; }
-        .nav-link:hover, .nav-link.active { background-color: #0d6efd; color: #fff; }
+        .nav-link { color: #aaaaaa; border-radius: 5px; margin-bottom: 5px; }
+        .nav-link:hover, .nav-link.active { background-color: #0d6efd; color: #ffffff; }
     </style>
 </head>
 <body>
@@ -41,14 +43,14 @@
                             <input type="password" id="loginPassword" class="form-control" placeholder="******">
                         </div>
                         <button onclick="handleLogin()" class="btn btn-primary w-100 mb-3">لاگ ان کریں</button>
-                        <p class="text-center">اکاؤنٹ نہیں ہے؟ <a href="#" onclick="toggleAuth(true)" class="text-decoration-none">سائن اپ کریں</a></p>
+                        <p class="text-center">اکاؤنٹ نہیں ہے؟ <a href="#" onclick="toggleAuth(true)" class="text-decoration-none text-info">سائن اپ کریں</a></p>
                     </div>
 
                     <!-- Signup Form -->
                     <div id="signupForm" style="display: none;">
                         <div class="mb-3">
                             <label class="form-label">آپ کا نام</label>
-                            <input type="text" id="signupName" class="form-control" placeholder="पूरा नाम">
+                            <input type="text" id="signupName" class="form-control" placeholder="پورا نام">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">پاسورڈ</label>
@@ -60,11 +62,11 @@
                         </div>
                         <!-- Math Captcha -->
                         <div class="mb-3">
-                            <label class="form-label" id="captchaLabel"></label>
+                            <label class="form-label text-warning" id="captchaLabel"></label>
                             <input type="number" id="captchaAnswer" class="form-control" placeholder="جواب لکھیں">
                         </div>
                         <button onclick="handleSignup()" class="btn btn-success w-100 mb-3">سائن اپ کریں (آٹو آئی ڈی بنائیں)</button>
-                        <p class="text-center">پہلے سے اکاؤنٹ ہے؟ <a href="#" onclick="toggleAuth(false)" class="text-decoration-none">لاگ ان کریں</a></p>
+                        <p class="text-center">پہلے سے اکاؤنٹ ہے؟ <a href="#" onclick="toggleAuth(false)" class="text-decoration-none text-info">لاگ ان کریں</a></p>
                     </div>
                 </div>
             </div>
@@ -104,7 +106,7 @@
                             <div class="card p-4 mb-4">
                                 <h4>خوش آمدید!</h4>
                                 <p class="text-muted">ٹاسک مکمل کریں اور روزانہ کی بنیاد پر ارننگ کریں۔ اپنے دوستوں کو ریفر کریں اور لائف ٹائم ارننگ کا 10% کمیشن حاصل کریں۔</p>
-                                <div class="alert alert-secondary border-0">
+                                <div class="alert alert-secondary border-0 text-white">
                                     <strong>آپ کا ریفرل لنک:</strong> <span id="refLinkDisplay" class="text-info"></span>
                                 </div>
                             </div>
@@ -167,8 +169,8 @@
                 </div>
             </div>
         </div>
-    </div>
-        <!-- Firebase SDKs & App Logic -->
+                            </div>
+                                <!-- Firebase SDKs & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -272,20 +274,16 @@
             document.getElementById('userIdDisplay').innerText = currentUser.userId;
             document.getElementById('userBalance').innerText = currentUser.balance.toFixed(2);
             
-            // Referral Link Generation
             let refLink = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
             document.getElementById('refLinkDisplay').innerText = refLink;
 
-            // Check Admin Access via specific email
             if (currentUser.email === 'mf3767189@gmail.com' || currentUser.userId === 'TM-ADMIN') {
                 document.getElementById('adminNavTab').style.display = 'block';
             }
 
-            // Load Offerwall Frame with Public API & User ID (60% profit configuration active)
             let offerwallUrl = `https://offerwall.me/embed/p8Su32wpzXb1JMoOZpAbIIYXMDE9fP?user_id=${currentUser.userId}`;
             document.getElementById('offerwallFrame').src = offerwallUrl;
 
-            // Load PTP Task Frame
             let ptpUrl = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${currentUser.userId}&subId=${currentUser.userId}`;
             document.getElementById('ptpFrame').src = ptpUrl;
         }
@@ -340,5 +338,4 @@
         }
     </script>
 </body>
-  </html>
-  
+</html>

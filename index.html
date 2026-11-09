@@ -80,7 +80,7 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid var(--border);
     }
     .topbar-left { display: flex; align-items: center; gap: 12px; }
-    .menu-btn { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text); }
+    .menu-btn { display: block; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text); }
     .welcome { font-size: 0.95rem; font-weight: 600; }
     .topbar-right { display: flex; align-items: center; gap: 14px; }
     .avatar {
@@ -154,7 +154,6 @@
       .sidebar.open { transform: translateX(0); }
       .overlay.open { display: block; }
       .main { margin-left: 0; padding: 14px; }
-      .menu-btn { display: block; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
@@ -208,7 +207,9 @@
       <ul class="nav-links" id="navLinks">
         <li><a class="active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</a></li>
         <li><a onclick="showPage('tasks', this)"><i class="fa-solid fa-list-check"></i> Task Section (PTP)</a></li>
+        <li><a onclick="showPage('manual-tasks', this)"><i class="fa-solid fa-tasks"></i> Manual Tasks</a></li>
         <li><a onclick="showPage('offers', this)"><i class="fa-solid fa-gift"></i> Offer Section</a></li>
+        <li><a onclick="showPage('advertiser', this)"><i class="fa-solid fa-bullhorn"></i> Advertiser</a></li>
         <li><a onclick="showPage('withdraw', this)"><i class="fa-solid fa-wallet"></i> Withdraw</a></li>
         <li><a onclick="showPage('support', this)"><i class="fa-solid fa-headset"></i> Support</a></li>
       </ul>
@@ -258,6 +259,14 @@
         </div>
       </div>
 
+      <div class="card" style="background: rgba(91, 70, 246, 0.1); border: 1px solid var(--primary); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h4 style="color:#a78bfa; margin-bottom:4px;">Referral Commission Earned</h4>
+          <p style="font-size:0.82rem; color:var(--muted);">Total commission received from your referred users</p>
+        </div>
+        <div id="dashRefCommission" style="font-size:1.3rem; font-weight:800; color:#34d399;">$0.00</div>
+      </div>
+
       <div class="card">
         <div class="card-header"><h3><i class="fa-solid fa-link" style="color: var(--primary);"></i> Your Lifetime Referral Link</h3></div>
         <div class="ref-box">
@@ -266,13 +275,21 @@
         </div>
         <p style="font-size: 0.78rem; color: var(--muted);">🎁 Earn 10% lifetime commission from your referrals' earnings</p>
       </div>
-    </div>
-        <div id="tasks" class="page-section">
+                                                          </div>
+                                                                               <div id="tasks" class="page-section">
       <div class="card" style="text-align: center; padding: 30px 20px;">
         <div class="card-header" style="justify-content: center;"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Live PTP Traffic Link</h3></div>
         <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">Visit the PTP link below to view tasks and earn rewards securely tracked with your unique User ID.</p>
         <p style="font-size: 0.82rem; color: #34d399; margin-bottom: 20px;"><i class="fa-solid fa-circle-info"></i> Note: Rewards are credited directly by the Admin.</p>
         <a id="ptpLinkBtn" href="#" target="_blank" class="action-btn" style="padding: 14px 30px; font-size: 1rem; font-weight: 700; border-radius: 12px; background: var(--green);">Start PTP Visit <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></a>
+      </div>
+    </div>
+
+    <div id="manual-tasks" class="page-section">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-tasks" style="color: var(--primary);"></i> Available Manual Tasks</h3></div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 14px;">Complete campaigns created by advertisers, submit your proof and earn cash rewards!</p>
+        <div id="manualTaskList" style="display: flex; flex-direction: column; gap: 12px;"></div>
       </div>
     </div>
 
@@ -283,6 +300,43 @@
         </div>
         <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">Complete offers directly inside the portal below. Automatically secured with Signed User ID!</p>
         <iframe id="offerwallIframe" src="" style="width: 100%; flex: 1; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
+      </div>
+    </div>
+
+    <div id="advertiser" class="page-section">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: var(--primary);"></i> Advertiser Campaign Hub</h3></div>
+        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 16px;">Create manual tasks or traffic campaigns for real users.</p>
+        <div class="form-group">
+          <label>Campaign / Task Title</label>
+          <input type="text" id="advTitle" class="form-control" placeholder="e.g. Subscribe my YouTube Channel" />
+        </div>
+        <div class="form-group">
+          <label>Target URL / Instructions</label>
+          <input type="text" id="advUrl" class="form-control" placeholder="https://youtube.com/... (Provide instructions)" />
+        </div>
+        <div class="form-group">
+          <label>Reward per completion ($)</label>
+          <input type="number" step="any" id="advBudget" class="form-control" placeholder="0.05" />
+        </div>
+        <button class="action-btn" onclick="submitCampaign()">Launch Task Campaign</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Your Campaigns</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>URL</th>
+                <th>Reward</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="userCampaignHistory"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -385,6 +439,43 @@
       </div>
 
       <div class="card">
+        <div class="card-header"><h3>Advertiser Campaigns Control</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>User / Email</th>
+                <th>Title</th>
+                <th>URL</th>
+                <th>Reward</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminCampaignsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Manual Task Proofs Review (Approve / Reject)</h3></div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Task Title</th>
+                <th>Proof / Detail</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="adminTaskProofsTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
         <div class="card-header"><h3>Withdrawal Requests (Approve / Reject)</h3></div>
         <div class="table-responsive">
           <table>
@@ -461,7 +552,8 @@
     function formatMoney(val) {
       let num = parseFloat(val) || 0;
       if (num === 0) return "0.00";
-      return num.toFixed(9).replace(/\.?0+$/, "");
+      if (num < 0.00001) return num.toFixed(9).replace(/\.?0+$/, "");
+      return num.toFixed(4).replace(/\.?0+$/, "");
     }
 
     async function handleLogin() {
@@ -605,7 +697,18 @@
         let res = await fetch('https://api.ipify.org?format=json');
         let data = await res.json();
         ip = data.ip;
-      } catch (e) {}
+      } catch (e) {
+        try {
+          let res2 = await fetch('https://ipapi.co/json/');
+          let data2 = await res2.json();
+          ip = data2.ip;
+        } catch(err) {
+          try {
+            let res3 = await fetch('https://icanhazip.com/');
+            ip = (await res3.text()).trim();
+          } catch(err2) {}
+        }
+      }
 
       let userRef = db.collection("users").doc(docId);
       await userRef.update({ 
@@ -619,18 +722,28 @@
         localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
       }
 
+      let calculatedBalance = (parseFloat(currentUser.taskPaid) || 0) + (parseFloat(currentUser.offerPaid) || 0) + (parseFloat(currentUser.ptpPaid) || 0) + (parseFloat(currentUser.totalBalance) || 0);
+
       document.getElementById('welcomeMsg').innerHTML = `Welcome! <span style="background: rgba(109,40,217,0.2); color: #a78bfa; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 700; margin-left: 4px;">ID: ${currentUser.userId || 'TM-1000'}</span>`;
       document.getElementById('userAvatar').innerText = currentUser.userId ? currentUser.userId.substring(0,2) : "TM";
       
-      document.getElementById('dashTotalBalance').innerText = `$${formatMoney(currentUser.totalBalance || 0)}`;
-      document.getElementById('dashPtpEarn').innerText = `$${formatMoney(currentUser.ptpEarnings || 0)}`;
-      document.getElementById('dashOfferEarn').innerText = `$${formatMoney(currentUser.offerEarnings || 0)}`;
+      document.getElementById('dashTotalBalance').innerText = `$${formatMoney(calculatedBalance)}`;
+      document.getElementById('dashPtpEarn').innerText = `$${formatMoney(currentUser.ptpEarnings || currentUser.ptpPaid || 0)}`;
+      document.getElementById('dashOfferEarn').innerText = `$${formatMoney(currentUser.offerEarnings || currentUser.offerPaid || 0)}`;
 
       try {
         let refSnap = await db.collection("users").where("referredBy", "==", currentUser.userId).get();
         document.getElementById('dashRefCount').innerText = refSnap.size;
+        let totalComm = 0;
+        refSnap.forEach(rDoc => {
+          let rData = rDoc.data();
+          let rEarn = (parseFloat(rData.taskPaid) || 0) + (parseFloat(rData.offerPaid) || 0) + (parseFloat(rData.ptpPaid) || 0);
+          totalComm += rEarn * REFERRAL_COMMISSION_RATE;
+        });
+        document.getElementById('dashRefCommission').innerText = `$${formatMoney(totalComm)}`;
       } catch(e) {
         document.getElementById('dashRefCount').innerText = 0;
+        document.getElementById('dashRefCommission').innerText = `$0.00`;
       }
 
       document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
@@ -659,6 +772,8 @@
       }
       loadSupportHistory();
       loadUserWithdrawHistory();
+      loadUserCampaigns();
+      loadManualTasks();
       loadBroadcast();
     }
 
@@ -687,6 +802,100 @@
       alert('Lifetime referral link copied!');
     }
 
+    async function submitCampaign() {
+      let title = document.getElementById('advTitle').value.trim();
+      let url = document.getElementById('advUrl').value.trim();
+      let budget = parseFloat(document.getElementById('advBudget').value);
+
+      if(!title || !url || isNaN(budget)) {
+        alert("Please fill all campaign fields correctly.");
+        return;
+      }
+
+      await db.collection("campaigns").add({
+        email: currentUser.email,
+        userId: currentUser.userId,
+        title,
+        url,
+        budget,
+        status: 'Active',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("Campaign launched successfully as a Manual Task!");
+      document.getElementById('advTitle').value = '';
+      document.getElementById('advUrl').value = '';
+      document.getElementById('advBudget').value = '';
+      loadUserCampaigns();
+    }
+
+    async function loadUserCampaigns() {
+      let html = '';
+      try {
+        let snap = await db.collection("campaigns").where("email", "==", currentUser.email).get();
+        if(snap.empty) {
+          html = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No campaigns created yet</td></tr>`;
+        } else {
+          snap.forEach(doc => {
+            let c = doc.data();
+            html += `<tr>
+              <td>${c.title}</td>
+              <td><a href="${c.url}" target="_blank" style="color:#93c5fd;">Open Link</a></td>
+              <td>$${formatMoney(c.budget)}</td>
+              <td><span class="badge-approved">${c.status}</span></td>
+            </tr>`;
+          });
+        }
+      } catch(e) {}
+      let container = document.getElementById('userCampaignHistory');
+      if(container) container.innerHTML = html;
+    }
+
+    async function loadManualTasks() {
+      let html = '';
+      try {
+        let snap = await db.collection("campaigns").where("status", "==", "Active").get();
+        if(snap.empty) {
+          html = `<p style="color:var(--muted); text-align:center;">No manual tasks available right now. Check back later!</p>`;
+        } else {
+          snap.forEach(doc => {
+            let t = doc.data();
+            let taskId = doc.id;
+            html += `<div style="background:#252525; padding:14px; border-radius:10px; border:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <h4 style="font-size:0.95rem; color:#fff; margin-bottom:4px;">${t.title}</h4>
+                <p style="font-size:0.8rem; color:var(--muted); margin-bottom:6px;">Instructions / URL: <a href="${t.url}" target="_blank" style="color:#93c5fd;">${t.url}</a></p>
+                <span style="background:rgba(5,150,105,0.2); color:#34d399; padding:2px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Reward: $${formatMoney(t.budget)}</span>
+              </div>
+              <button class="action-btn" onclick="openTaskSubmitModal('${taskId}', '${t.title}', ${t.budget})">Submit Proof</button>
+            </div>`;
+          });
+        }
+      } catch(e) {
+        html = `<p style="color:var(--muted); text-align:center;">Loading tasks...</p>`;
+      }
+      let container = document.getElementById('manualTaskList');
+      if(container) container.innerHTML = html;
+    }
+
+    async function openTaskSubmitModal(taskId, taskTitle, reward) {
+      let proof = prompt(`Submit proof for "${taskTitle}" (e.g. Your username or screenshot link):`);
+      if(!proof) return;
+
+      await db.collection("task_proofs").add({
+        taskId,
+        taskTitle,
+        reward,
+        userEmail: currentUser.email,
+        userId: currentUser.userId,
+        proof,
+        status: 'Pending',
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      alert("Task proof submitted successfully! Waiting for admin review.");
+    }
+
     async function submitWithdrawal() {
       let method = document.getElementById('wMethod').value;
       let field1 = document.getElementById('wField1').value.trim();
@@ -701,14 +910,24 @@
         alert("Minimum withdrawal is $5.");
         return;
       }
-      if (currentUser.totalBalance < amount) {
+      let currentBal = (parseFloat(currentUser.totalBalance) || 0) + (parseFloat(currentUser.taskPaid) || 0) + (parseFloat(currentUser.offerPaid) || 0) + (parseFloat(currentUser.ptpPaid) || 0);
+      if (currentBal < amount) {
         alert("Insufficient balance!");
         return;
       }
 
-      currentUser.totalBalance -= amount;
+      currentUser.totalBalance = currentBal - amount;
+      currentUser.taskPaid = 0;
+      currentUser.offerPaid = 0;
+      currentUser.ptpPaid = 0;
+
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
-      await db.collection("users").doc(docId).update({ totalBalance: currentUser.totalBalance });
+      await db.collection("users").doc(docId).update({ 
+        totalBalance: currentUser.totalBalance,
+        taskPaid: 0,
+        offerPaid: 0,
+        ptpPaid: 0
+      });
       localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
 
       let req = { email: currentUser.email, userId: currentUser.userId, method, field1, field2, amount: amount.toFixed(2), status: 'Pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
@@ -804,9 +1023,9 @@
           <td><span style="font-weight:bold;">${u.email}</span><br>${statusBadge}</td>
           <td style="font-family:monospace; font-size:11px;">${u.ip || 'Unknown'}</td>
           <td style="font-weight:bold; color:#a78bfa;">${tasksDone}</td>
-          <td style="color:#34d399;">$${formatMoney(u.offerEarnings || 0)}</td>
-          <td style="color:#60a5fa;">$${formatMoney(u.ptpEarnings || 0)}</td>
-          <td style="font-weight:bold;">$${formatMoney(u.totalBalance || 0)}</td>
+          <td style="color:#34d399;">$${formatMoney(u.offerEarnings || u.offerPaid || 0)}</td>
+          <td style="color:#60a5fa;">$${formatMoney(u.ptpEarnings || u.ptpPaid || 0)}</td>
+          <td style="font-weight:bold;">$${formatMoney((parseFloat(u.totalBalance)||0) + (parseFloat(u.taskPaid)||0) + (parseFloat(u.offerPaid)||0) + (parseFloat(u.ptpPaid)||0))}</td>
           <td>
             <input type="number" step="any" id="payTask_${targetDocId}" value="${u.taskPaid || 0}" placeholder="Task Pay" class="form-control" style="width:75px; padding:4px; font-size:11px; margin-bottom:2px;" />
             <input type="number" step="any" id="payOffer_${targetDocId}" value="${u.offerPaid || 0}" placeholder="Offer Pay" class="form-control" style="width:75px; padding:4px; font-size:11px; margin-bottom:2px;" />
@@ -819,83 +1038,154 @@
       });
       document.getElementById('adminUsersTable').innerHTML = uHtml;
 
-      let wHtml = '';
-      let wSnap = await db.collection("withdraws").get();
-      wSnap.forEach(doc => {
-        let req = doc.data();
-        let docId = doc.id;
-        wHtml += `<tr>
-          <td>${req.userId || req.email}</td>
-          <td>${req.method}</td>
-          <td>${req.field1}</td>
-          <td>${req.field2}</td>
-          <td style="color:var(--red); font-weight:700;">-$${req.amount}</td>
-          <td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td>
+      let cHtml = '';
+      let cSnap = await db.collection("campaigns").get();
+      cSnap.forEach(doc => {
+        let camp = doc.data();
+        let campId = doc.id;
+        cHtml += `<tr>
+          <td>${camp.userId || camp.email}</td>
+          <td>${camp.title}</td>
+          <td><a href="${camp.url}" target="_blank" style="color:#93c5fd;">Link</a></td>
+          <td>$${formatMoney(camp.budget)}</td>
+          <td><span class="badge-approved">${camp.status}</span></td>
           <td>
-            ${req.status === 'Pending' ? `
-              <button onclick="changeWithdrawStatus('${docId}', 'Approved')" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>
-              <button onclick="changeWithdrawStatus('${docId}', 'Rejected')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Reject</button>
+            <button onclick="deleteCampaign('${campId}')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Remove</button>
+          </td>
+        </tr>`;
+      });
+      document.getElementById('adminCampaignsTable').innerHTML = cHtml;
+
+      let pHtml = '';
+      let pSnap = await db.collection("task_proofs").get();
+      pSnap.forEach(doc => {
+        let proof = doc.data();
+        let proofId = doc.id;
+        pHtml += `<tr>
+          <td>${proof.userId || proof.userEmail}</td>
+          <td>${proof.taskTitle}</td>
+          <td style="font-family:monospace; font-size:11px;">${proof.proof}</td>
+          <td><span class="badge-${proof.status.toLowerCase()}">${proof.status}</span></td>
+          <td>
+            ${proof.status === 'Pending' ? `
+              <button onclick="approveTaskProof('${proofId}', '${proof.userEmail}', ${proof.reward})" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>
+              <button onclick="rejectTaskProof('${proofId}')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Reject</button>
             ` : 'Completed'}
           </td>
         </tr>`;
       });
-      document.getElementById('adminWithdrawTable').innerHTML = wHtml;
+      document.getElementById('adminTaskProofsTable').innerHTML = pHtml;
 
-      let sHtml = '';
-      let sSnap = await db.collection("support").get();
-      sSnap.forEach(doc => {
-        let msg = doc.data();
-        let docId = doc.id;
-        sHtml += `<div style="background:#252525; padding:12px; border-radius:8px; margin-bottom:10px; font-size:0.85rem; border:1px solid var(--border);">
-          <strong>From (ID):</strong> ${msg.userId || msg.email}<br>
-          <strong>Message:</strong> ${msg.text}<br>
-          <div style="margin-top:6px; display:flex; gap:6px;">
-            <input type="text" id="reply_${docId}" class="form-control" placeholder="Type reply..." value="${msg.reply || ''}">
-            <button class="action-btn" onclick="sendAdminReply('${docId}')">Send Reply</button>
-          </div>
-        </div>`;
+          let wHtml = '';
+    let wSnap = await db.collection("withdraws").get();
+    wSnap.forEach(doc => {
+      let req = doc.data();
+      let docId = doc.id;
+      wHtml += `<tr>
+        <td>${req.userId || req.email}</td>
+        <td>${req.method}</td>
+        <td>${req.field1}</td>
+        <td>${req.field2}</td>
+        <td style="color:var(--red); font-weight:700;">-$${req.amount}</td>
+        <td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td>
+        <td>
+          ${req.status === 'Pending' ? `
+            <button onclick="changeWithdrawStatus('${docId}', 'Approved')" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>
+            <button onclick="changeWithdrawStatus('${docId}', 'Rejected')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Reject</button>
+          ` : 'Completed'}
+        </td>
+      </tr>`;
+    });
+    let wContainer = document.getElementById('adminWithdrawTable');
+    if(wContainer) wContainer.innerHTML = wHtml;
+
+    let sHtml = '';
+    let sSnap = await db.collection("support").get();
+    sSnap.forEach(doc => {
+      let msg = doc.data();
+      let docId = doc.id;
+      sHtml += `<div style="background:#252525; padding:12px; border-radius:8px; margin-bottom:10px; font-size:0.85rem; border:1px solid var(--border);">
+        <strong>From (ID):</strong> ${msg.userId || msg.email}<br>
+        <strong>Message:</strong> ${msg.text}<br>
+        <div style="margin-top:6px; display:flex; gap:6px;">
+          <input type="text" id="reply_${docId}" class="form-control" placeholder="Type reply..." value="${msg.reply || ''}">
+          <button class="action-btn" onclick="sendAdminReply('${docId}')">Send Reply</button>
+        </div>
+      </div>`;
+    });
+    let sContainer = document.getElementById('adminSupportInbox');
+    if(sContainer) sContainer.innerHTML = sHtml;
+  }
+
+  async function saveUserPayments(targetDocId) {
+    let taskPaid = parseFloat(document.getElementById(`payTask_${targetDocId}`).value) || 0;
+    let offerPaid = parseFloat(document.getElementById(`payOffer_${targetDocId}`).value) || 0;
+    let ptpPaid = parseFloat(document.getElementById(`payPtp_${targetDocId}`).value) || 0;
+    
+    try {
+      await db.collection("users").doc(targetDocId).update({
+        taskPaid: taskPaid,
+        offerPaid: offerPaid,
+        ptpPaid: ptpPaid
       });
-      document.getElementById('adminSupportInbox').innerHTML = sHtml;
-    }
-
-    async function saveUserPayments(targetDocId) {
-      let taskPaid = parseFloat(document.getElementById(`payTask_${targetDocId}`).value) || 0;
-      let offerPaid = parseFloat(document.getElementById(`payOffer_${targetDocId}`).value) || 0;
-      let ptpPaid = parseFloat(document.getElementById(`payPtp_${targetDocId}`).value) || 0;
-      
-      try {
-        await db.collection("users").doc(targetDocId).update({
-          taskPaid: taskPaid,
-          offerPaid: offerPaid,
-          ptpPaid: ptpPaid
-        });
-        alert("User payments and records successfully updated!");
-        loadAdminPanelData();
-      } catch(err) {
-        alert("Error updating payment: " + err.message);
-      }
-    }
-
-    async function changeWithdrawStatus(docId, status) {
-      await db.collection("withdraws").doc(docId).update({ status: status });
+      alert("User payments and records successfully updated!");
       loadAdminPanelData();
-      alert("Withdrawal status updated!");
+    } catch(err) {
+      alert("Error updating payment: " + err.message);
     }
+  }
 
-    async function sendAdminReply(docId) {
-      let replyText = document.getElementById(`reply_${docId}`).value;
-      await db.collection("support").doc(docId).update({ reply: replyText });
-      loadAdminPanelData();
-      alert("Reply sent successfully!");
+  async function approveTaskProof(proofId, userEmail, reward) {
+    await db.collection("task_proofs").doc(proofId).update({ status: 'Approved' });
+    let targetDocId = userEmail.replace(/[^a-zA-Z0-9]/g, "_");
+    let uRef = db.collection("users").doc(targetDocId);
+    let uDoc = await uRef.get();
+    if(uDoc.exists) {
+      let uData = uDoc.data();
+      let currentTaskPaid = parseFloat(uData.taskPaid) || 0;
+      let tasksCount = (uData.completedTasks || []).length + 1;
+      await uRef.update({
+        taskPaid: currentTaskPaid + reward,
+        tasks: tasksCount
+      });
     }
+    loadAdminPanelData();
+    alert("Task proof approved and reward credited to worker!");
+  }
 
-    async function saveBroadcast() {
-      let text = document.getElementById('adminBroadcastInput').value;
-      if (!text) return;
-      await db.collection("settings").doc("broadcast").set({ text: text });
-      document.getElementById('broadcastText').innerText = text;
-      alert("Broadcast message updated successfully!");
-    }
-  </script>
+  async function rejectTaskProof(proofId) {
+    await db.collection("task_proofs").doc(proofId).update({ status: 'Rejected' });
+    loadAdminPanelData();
+    alert("Task proof rejected!");
+  }
+
+  async function deleteCampaign(campId) {
+    await db.collection("campaigns").doc(campId).delete();
+    loadAdminPanelData();
+    alert("Campaign removed!");
+  }
+
+  async function changeWithdrawStatus(docId, status) {
+    await db.collection("withdraws").doc(docId).update({ status: status });
+    loadAdminPanelData();
+    alert("Withdrawal status updated!");
+  }
+
+  async function sendAdminReply(docId) {
+    let replyText = document.getElementById(`reply_${docId}`).value;
+    await db.collection("support").doc(docId).update({ reply: replyText });
+    loadAdminPanelData();
+    alert("Reply sent successfully!");
+  }
+
+  async function saveBroadcast() {
+    let text = document.getElementById('adminBroadcastInput').value;
+    if (!text) return;
+    await db.collection("settings").doc("broadcast").set({ text: text });
+    let broadcastEl = document.getElementById('broadcastText');
+    if(broadcastEl) broadcastEl.innerText = text;
+    alert("Broadcast message updated successfully!");
+  }
+</script>
 </body>
 </html>

@@ -274,11 +274,14 @@
     </div>
 
     <div id="offers" class="page-section">
-      <div class="card" style="text-align: center; padding: 40px 20px;">
-        <div class="card-header" style="justify-content: center;"><h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offerwall</h3></div>
-        <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 10px;">Complete high-paying offers and surveys. User gets 60% and referrer gets 10% lifetime commission automatically!</p>
-        <p style="font-size: 0.82rem; color: #34d399; margin-bottom: 20px;"><i class="fa-solid fa-circle-check"></i> Your unique User ID is automatically attached to the offerwall link!</p>
-        <a id="offerwallLinkBtn" href="#" target="_blank" class="action-btn" style="padding: 14px 30px; font-size: 1rem; font-weight: 700; border-radius: 12px; background: var(--primary);">Open Offerwall Page <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></a>
+      <div class="card" style="padding: 14px; height: 82vh; display: flex; flex-direction: column;">
+        <div class="card-header" style="margin-bottom: 8px;">
+          <h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offerwall</h3>
+          <span style="font-size: 0.75rem; color: var(--green);">User: 60% | Referrer: 10% Commission</span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 10px;">Complete offers directly inside the portal below. Automatically secured with Signed User ID!</p>
+        <!-- Embedded Iframe for Offerwall with Signed URL -->
+        <iframe id="offerwallIframe" src="" style="width: 100%; flex: 1; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
       </div>
     </div>
 
@@ -553,6 +556,26 @@
       }
     }
 
+    // Function to generate HMAC-SHA256 Signed Offerwall URL for Offerwall.me
+    async function getSignedOfferwallUrl(publicKey, userId, secretKey) {
+      const expires = Math.floor(Date.now() / 1000) + 3600; // 1 hour expiry
+      const message = `offerwall-user-v1\n${publicKey}\n${userId}\n${expires}`;
+      
+      const encoder = new TextEncoder();
+      const keyData = encoder.encode(secretKey);
+      const messageData = encoder.encode(message);
+      
+      const cryptoKey = await crypto.subtle.importKey(
+        "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+      );
+      
+      const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, messageData);
+      const signatureArray = Array.from(new Uint8Array(signatureBuffer));
+      const signature = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      return `https://offerwall.me/offerwall/${encodeURIComponent(publicKey)}/${encodeURIComponent(userId)}?identityExpires=${expires}&identitySignature=${signature}`;
+    }
+
     async function initUserSession() {
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
       let freshDoc = await db.collection("users").doc(docId).get();
@@ -575,9 +598,17 @@
       }
 
       let trackingId = currentUser.userId || 'User';
-      
-      // Automatic user_id attachment for Offerwall and PTP
-      document.getElementById('offerwallLinkBtn').href = `https://offerwall.me/wall/p8Su32wpzXb1JMoOZpAbIIYXMDE9fP?user_id=${trackingId}`;
+      let publicKey = "p8Su32wpzXb1JMoOZpAbIIYXMDE9fP";
+      let secretKey = "nCwt7QwaJdX6psK2VyEt5SJTuh8ZMcbT";
+
+      // Generate signed URL and load inside iframe securely
+      try {
+        let signedUrl = await getSignedOfferwallUrl(publicKey, trackingId, secretKey);
+        document.getElementById('offerwallIframe').src = signedUrl;
+      } catch(err) {
+        console.error("Error generating signed offerwall url:", err);
+      }
+
       document.getElementById('ptpLinkBtn').href = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${trackingId}&subId=${trackingId}`;
 
       if (currentUser.email === "mf3767189@gmail.com") {
@@ -799,7 +830,7 @@
           });
 
           if (userData.referredBy) {
-            let refQuery = await db.collection("users").where("userId", "==", userData.referredBy).get();
+            let refQuery = await db.collection("users").where("referredBy", "==", userData.referredBy).get();
             if (!refQuery.empty) {
               let refDoc = refQuery.docs[0];
               let refData = refDoc.data();

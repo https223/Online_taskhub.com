@@ -764,8 +764,9 @@
       document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 
       let trackingId = currentUser.userId || 'User';
-      let publicKey = "p8Su32wpzXb1JMoOZpAbIIYXMDE9fP";
-      let secretKey = "nCwt7QwaJdX6psK2VyEt5SJTuh8ZMcbT";
+      let publicKey = "0K5o1IUb37mooZXZefWQhHGEihSgNQ";
+let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
+      
 
       try {
         let signedUrl = await getSignedOfferwallUrl(publicKey, trackingId, secretKey);

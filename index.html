@@ -682,18 +682,23 @@
         initUserSession();
       } catch (err) { alert("Signup error: " + err.message); }
     }
-    async function getSignedOfferwallUrl(publicKey, userId, secretKey) {
+        async function getSignedOfferwallUrl(publicKey, userId, secretKey) {
+      const expiry = Math.floor(Date.now() / 1000) + 3600;
+      const message = `${userId}:${expiry}`;
       const encoder = new TextEncoder();
       const keyData = encoder.encode(secretKey);
-      const msgData = encoder.encode(userId);
+      const msgData = encoder.encode(message);
+      
       const cryptoKey = await crypto.subtle.importKey(
         "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
       );
       const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, msgData);
       const signatureArray = Array.from(new Uint8Array(signatureBuffer));
       const signatureHex = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      return `https://offerwall.me/offerwall/${publicKey}/${userId}?signature=${signatureHex}`;
-      }
+      
+      return `https://offerwall.me/offerwall/${publicKey}/${userId}?expiry=${expiry}&signature=${signatureHex}`;
+        }
+                                                                                         
       
     async function initUserSession() {
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");

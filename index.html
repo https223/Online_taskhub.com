@@ -564,6 +564,26 @@
     </div>
   </main>
     <script>
+      // Offerwall Signature Handler
+async function loadOfferwall() {
+    let userId = 'TM-1000';
+    try {
+        let user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user && user.uid) { userId = user.uid; }
+    } catch(e) {}
+
+    try {
+        let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev?userId=${userId}`);
+        let data = await res.json();
+        if (data.url) {
+            let iframe = document.getElementById('offerwall-frame');
+            if (iframe) { iframe.src = data.url; }
+        }
+    } catch(e) {
+        console.error('Error fetching signed offerwall URL', e);
+    }
+}
+      
     const firebaseConfig = {
       apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",
       authDomain: "online-taskhub.firebaseapp.com",

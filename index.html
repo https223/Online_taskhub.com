@@ -751,7 +751,7 @@
       document.getElementById('dashOfferEarn').innerText = `$${formatMoney(currentUser.offerEarnings || currentUser.offerPaid || 0)}`;
       document.getElementById('advWalletBalance').innerText = `$${formatMoney(currentUser.advBalance || 0)}`;
 
-      try {
+            try {
         let refSnap = await db.collection("users").where("referredBy", "==", currentUser.userId).get();
         document.getElementById('dashRefCount').innerText = refSnap.size;
         let totalComm = 0;
@@ -761,10 +761,23 @@
           totalComm += rEarn * REFERRAL_COMMISSION_RATE;
         });
         document.getElementById('dashRefCommission').innerText = `$${formatMoney(totalComm)}`;
+
+        if (totalComm > 0 && currentUser.referralCommissionPaid !== totalComm) {
+          currentUser.referralCommissionPaid = totalComm;
+          currentUser.totalBalance = (parseFloat(currentUser.totalBalance) || 0) + totalComm;
+          
+          let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
+          await db.collection("users").doc(docId).update({
+            totalBalance: currentUser.totalBalance,
+            referralCommissionPaid: totalComm
+          });
+          localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+        }
       } catch(e) {
         document.getElementById('dashRefCount').innerText = 0;
         document.getElementById('dashRefCommission').innerText = `$0.00`;
-      }
+            }
+      
 
       document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 

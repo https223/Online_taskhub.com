@@ -71,8 +71,7 @@
     }
     .nav-links a:hover { background: rgba(255,255,255,0.07); color: #fff; }
     .nav-links a.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
-
-    .main { flex: 1; margin-left: 240px; padding: 20px 24px; width: 100%; }
+        .main { flex: 1; margin-left: 240px; padding: 20px 24px; width: 100%; }
 
     .topbar {
       display: flex; justify-content: space-between; align-items: center;
@@ -198,8 +197,9 @@
         <button class="auth-submit" onclick="handleSignup()" style="background: var(--green);">Create Account</button>
       </div>
     </div>
-          </div>
-            <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
   <aside class="sidebar" id="sidebar">
     <div>
@@ -221,8 +221,7 @@
       <button onclick="copyRef()" style="width: 100%; padding: 8px; border: none; border-radius: 8px; background: #6366f1; color: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Copy Link</button>
     </div>
   </aside>
-
-  <main class="main">
+    <main class="main">
     <div class="topbar">
       <div class="topbar-left">
         <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
@@ -275,7 +274,8 @@
         </div>
       </div>
     </div>
-        <div id="tasks" class="page-section">
+
+    <div id="tasks" class="page-section">
       <div class="card" style="text-align: center; padding: 30px 20px;">
         <div class="card-header" style="justify-content: center;"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Live PTP Traffic Link</h3></div>
         <p style="font-size: 0.9rem; color: var(--muted); margin-bottom: 20px;">Visit the PTP link below to view tasks and earn rewards securely tracked with your unique User ID.</p>
@@ -296,11 +296,10 @@
         <div class="card-header" style="margin-bottom: 8px;">
           <h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offerwall</h3>
         </div>
-        <iframe id="offerwallIframe" src="" style="width: 100%; flex: 1; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
+        <iframe id="offerwalliframe" src="" style="width: 100%; flex: 1; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
       </div>
     </div>
-
-    <div id="advertiser" class="page-section">
+        <div id="advertiser" class="page-section">
       <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green); display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h4 style="color:#34d399; margin-bottom:4px;"><i class="fa-solid fa-wallet"></i> Advertiser Wallet Balance</h4>
@@ -366,7 +365,6 @@
         </div>
         <button class="action-btn" onclick="submitCampaign()">Launch Campaign (Pending Admin Approval)</button>
       </div>
-
       <div class="card">
         <div class="card-header"><h3>Your Campaigns History</h3></div>
         <div class="table-responsive">
@@ -385,7 +383,8 @@
         </div>
       </div>
     </div>
-        <div id="withdraw" class="page-section">
+
+    <div id="withdraw" class="page-section">
       <div class="card" style="background: rgba(49, 46, 129, 0.2); border: 1px solid #4338ca; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 12px;">
         <div>
           <h4 style="font-size: 0.95rem; color: #a5b4fc; margin-bottom: 2px;"><i class="fa-solid fa-triangle-exclamation"></i> Minimum Withdrawal Policy</h4>
@@ -447,9 +446,8 @@
         <button class="action-btn" onclick="sendSupportMessage()">Send Message</button>
         <div id="userSupportHistory" style="margin-top: 20px;"></div>
       </div>
-    </div>
-
-    <div id="admin-panel" class="page-section">
+  </div>
+                <div id="admin-panel" class="page-section">
       <div class="card" style="background: #1e1b4b; color: #fff;">
         <h2><i class="fa-solid fa-shield-halved"></i> Admin Master Dashboard</h2>
         <p style="font-size:0.85rem; color:#cbd5e1;">Manage user IP, Deposits, Campaigns & Payments: mf3767189@gmail.com</p>
@@ -564,42 +562,6 @@
     </div>
   </main>
     <script>
-      // Offerwall Signature Handler
-// Offerwall Signature Handler with Firebase support
-async function loadOfferwall() {
-    let userId = 'TM-1000';
-    try {
-        // طریقہ 1: اگر فائر بیس اتھنٹیکیشن استعمال ہو رہی ہے
-        if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
-            userId = firebase.auth().currentUser.uid;
-        } 
-        // طریقہ 2: اگر فائر اسٹور یا لوکل اسٹوریج میں فائر بیس کی آئی ڈی محفوظ ہے
-        else {
-            let savedUser = localStorage.getItem('taskmint_user');
-            if (savedUser) {
-                let userObj = JSON.parse(savedUser);
-                if (userObj && userObj.uid) {
-                    userId = userObj.uid;
-                }
-            }
-        }
-    } catch(e) {
-        console.error('Error getting user ID:', e);
-    }
-
-    try {
-        let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev?userId=${userId}`);
-        let data = await res.json();
-        if (data.url) {
-            let iframe = document.getElementById('offerwalliframe');
-            if (iframe) { iframe.src = data.url; }
-        }
-    } catch(e) {
-        console.error('Error fetching signed offerwall URL', e);
-    }
-}
-      
-      
     const firebaseConfig = {
       apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",
       authDomain: "online-taskhub.firebaseapp.com",
@@ -653,6 +615,31 @@ async function loadOfferwall() {
       if (num === 0) return "0.00";
       if (num < 0.00001) return num.toFixed(9).replace(/\.?0+$/, "");
       return num.toFixed(4).replace(/\.?0+$/, "");
+    }
+
+    // Fixed Offerwall Signature Handler
+    async function loadOfferwall() {
+      let userId = 'TM-1000';
+      try {
+        let savedUser = localStorage.getItem('taskmint_user');
+        if (savedUser) {
+          let userObj = JSON.parse(savedUser);
+          if (userObj && userObj.userId) {
+            userId = userObj.userId;
+          }
+        }
+      } catch(e) {}
+
+      try {
+        let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev?userId=${userId}`);
+        let data = await res.json();
+        if (data.url) {
+          let iframe = document.getElementById('offerwalliframe');
+          if (iframe) { iframe.src = data.url; }
+        }
+      } catch(e) {
+        console.error('Error fetching signed offerwall URL', e);
+      }
     }
 
     async function handleLogin() {
@@ -718,25 +705,7 @@ async function loadOfferwall() {
         initUserSession();
       } catch (err) { alert("Signup error: " + err.message); }
     }
-            async function getSignedOfferwallUrl(publicKey, userId, secretKey) {
-      const expiry = Math.floor(Date.now() / 1000) + 3600;
-      const message = `${userId}:${expiry}`;
-      const encoder = new TextEncoder();
-      const keyData = encoder.encode(secretKey);
-      const msgData = encoder.encode(message);
-      
-      const cryptoKey = await crypto.subtle.importKey(
-        "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-      );
-      const signatureBuffer = await crypto.subtle.sign("HMAC", cryptoKey, msgData);
-      const signatureArray = Array.from(new Uint8Array(signatureBuffer));
-      const signatureHex = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
-      
-      return `https://offerwall.me/offerwall/${publicKey}/${userId}?expiry=${expiry}&signature=${signatureHex}`;
-            }
-      
-                                                                                         
-      
+
     async function initUserSession() {
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
       let ip = "Unknown";
@@ -799,17 +768,9 @@ async function loadOfferwall() {
 
       document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 
-      let trackingId = currentUser.userId || 'User';
-      let publicKey = "0K5o1IUb37mooZXZefWQhHGEihSgNQ";
-let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
-      
+      loadOfferwall();
 
-      try {
-        let signedUrl = await getSignedOfferwallUrl(publicKey, trackingId, secretKey);
-        document.getElementById('offerwallIframe').src = signedUrl;
-      } catch(err) {}
-
-      document.getElementById('ptpLinkBtn').href = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${trackingId}&subId=${trackingId}`;
+      document.getElementById('ptpLinkBtn').href = `https://offerwall.me/ptp/6aed3c62af7436211fc27e60?user_id=${currentUser.userId || 'TM-1000'}&subId=${currentUser.userId || 'TM-1000'}`;
 
       if (currentUser.email === ADMIN_EMAIL) {
         if (!document.getElementById('adminNavLink')) {
@@ -826,7 +787,9 @@ let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
       loadManualTasks();
       loadBroadcast();
     }
-          function logout() { localStorage.removeItem('taskmint_user'); location.reload(); }
+
+    function logout() { localStorage.removeItem('taskmint_user'); location.reload(); }
+    
     function showPage(id, el) {
       document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
@@ -834,10 +797,12 @@ let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
       if (el) el.classList.add('active');
       if (window.innerWidth <= 900) toggleMenu();
     }
+
     function toggleMenu() {
       document.getElementById('sidebar').classList.toggle('open');
       document.getElementById('overlay').classList.toggle('open');
     }
+
     function copyRef() {
       const inp = document.getElementById('refInput');
       inp.select();
@@ -1012,6 +977,29 @@ let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
       alert("Message sent!");
       loadSupportHistory();
     }
+    async function loadUserWithdrawHistory() {
+      let html = '';
+      try {
+        let snapshot = await db.collection("withdraws").where("email", "==", currentUser.email).get();
+        if (snapshot.empty) { html = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No history</td></tr>`; }
+        else {
+          snapshot.forEach(doc => {
+            let r = doc.data();
+            html += `<tr><td>${r.method}</td><td>${r.field1}</td><td style="color:var(--red);">-$${r.amount}</td><td><span class="badge-${r.status.toLowerCase()}">${r.status}</span></td></tr>`;
+          });
+        }
+      } catch(e) {}
+      document.getElementById('userWithdrawHistory').innerHTML = html;
+    }
+
+    async function sendSupportMessage() {
+      let text = document.getElementById('msgText').value.trim();
+      if (!text) return;
+      await db.collection("support").add({ email: currentUser.email, userId: currentUser.userId, text, reply: '', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      document.getElementById('msgText').value = '';
+      alert("Message sent!");
+      loadSupportHistory();
+    }
 
     async function loadSupportHistory() {
       let html = '<h4>Your Support Tickets</h4>';
@@ -1023,8 +1011,9 @@ let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
         });
       } catch(e) {}
       document.getElementById('userSupportHistory').innerHTML = html;
-      }
-          async function loadBroadcast() {
+    }
+
+    async function loadBroadcast() {
       try {
         let doc = await db.collection("settings").doc("broadcast").get();
         if (doc.exists) document.getElementById('broadcastText').innerText = doc.data().text;
@@ -1171,6 +1160,7 @@ let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
 
     async function deleteCampaign(campId) { await db.collection("campaigns").doc(campId).delete(); loadAdminPanelData(); }
     async function changeWithdrawStatus(docId, status) { await db.collection("withdraws").doc(docId).update({ status }); loadAdminPanelData(); }
+    
     async function saveBroadcast() {
       let text = document.getElementById('adminBroadcastInput').value;
       if (!text) return;
@@ -1182,3 +1172,4 @@ let secretKey = "ZHfyg5Kf2XDadROD6mAFdZlVzs056nyD";
   </script>
 </body>
 </html>
+  

@@ -576,7 +576,7 @@ async function loadOfferwall() {
         let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev?userId=${userId}`);
         let data = await res.json();
         if (data.url) {
-            let iframe = document.getElementById('offerwall-frame');
+            let iframe = document.getElementById('offerwalliframe')
             if (iframe) { iframe.src = data.url; }
         }
     } catch(e) {

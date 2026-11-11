@@ -568,7 +568,7 @@
 async function loadOfferwall() {
     let userId = 'TM-1000';
     try {
-        let user = JSON.parse(localStorage.getItem('currentUser'));
+        let user = JSON.parse(localStorage.getItem('taskmint_user'));
         if (user && user.uid) { userId = user.uid; }
     } catch(e) {}
 

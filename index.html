@@ -565,24 +565,40 @@
   </main>
     <script>
       // Offerwall Signature Handler
+// Offerwall Signature Handler with Firebase support
 async function loadOfferwall() {
     let userId = 'TM-1000';
     try {
-        let user = JSON.parse(localStorage.getItem('taskmint_user'));
-        if (user && user.uid) { userId = user.uid; }
-    } catch(e) {}
+        // طریقہ 1: اگر فائر بیس اتھنٹیکیشن استعمال ہو رہی ہے
+        if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+            userId = firebase.auth().currentUser.uid;
+        } 
+        // طریقہ 2: اگر فائر اسٹور یا لوکل اسٹوریج میں فائر بیس کی آئی ڈی محفوظ ہے
+        else {
+            let savedUser = localStorage.getItem('taskmint_user');
+            if (savedUser) {
+                let userObj = JSON.parse(savedUser);
+                if (userObj && userObj.uid) {
+                    userId = userObj.uid;
+                }
+            }
+        }
+    } catch(e) {
+        console.error('Error getting user ID:', e);
+    }
 
     try {
         let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev?userId=${userId}`);
         let data = await res.json();
         if (data.url) {
-            let iframe = document.getElementById('offerwalliframe')
+            let iframe = document.getElementById('offerwalliframe');
             if (iframe) { iframe.src = data.url; }
         }
     } catch(e) {
         console.error('Error fetching signed offerwall URL', e);
     }
 }
+      
       
     const firebaseConfig = {
       apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",

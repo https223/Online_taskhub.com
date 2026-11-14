@@ -288,8 +288,8 @@
           <button class="copy-btn" onclick="copyRef()">Copy</button>
         </div>
       </div>
-    </div>
-        <!-- Tasks (PTP) -->
+          </div>
+              <!-- Tasks (PTP) -->
     <div id="tasks" class="page-section">
       <div class="card" style="text-align: center; padding: 30px 20px;">
         <div class="card-header" style="justify-content: center;"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Live PTP Traffic Link</h3></div>
@@ -368,7 +368,7 @@
           <div class="easypaisa-highlight">
             <div class="ep-title">EASYPAISA ACCOUNT DETAILS</div>
             <div class="ep-number">03176776279</div>
-            <div class="ep-name">Account Name: Amenah bibi</div>
+            <div class="ep-name">Account Name: Amenah bibi[span_0](start_span)[span_0](end_span)</div>
             <div style="font-size: 0.78rem; color: #d1fae5; margin-top: 6px;">Rate: 280 PKR = $1.00 USD</div>
           </div>
 
@@ -446,9 +446,8 @@
           </table>
         </div>
       </div>
-    </div>
-
-    <!-- Withdraw Section -->
+              </div>
+                  <!-- Withdraw Section -->
     <div id="withdraw" class="page-section">
       <div class="card" style="background: rgba(49, 46, 129, 0.2); border: 1px solid #4338ca; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 12px;">
         <div>
@@ -512,8 +511,8 @@
         <button class="action-btn" onclick="sendSupportMessage()">Send Message</button>
         <div id="userSupportHistory" style="margin-top: 20px;"></div>
       </div>
-          </div>
-              <!-- Admin Master Panel -->
+    </div>
+        <!-- Admin Master Panel -->
     <div id="admin-panel" class="page-section">
       <div class="card" style="background: #1e1b4b; color: #fff;">
         <h2><i class="fa-solid fa-shield-halved"></i> Admin Master Dashboard</h2>
@@ -567,7 +566,7 @@
       </div>
 
       <div class="card">
-        <div class="card-header"><h3>Advertiser Campaigns Approval Control (Custom Edit & Publish)</h3></div>
+        <div class="card-header"><h3>Advertiser Campaigns Approval Control (Custom Edit & Publish)[span_1](start_span)[span_1](end_span)</h3></div>
         <div class="table-responsive">
           <table>
             <thead>
@@ -767,9 +766,18 @@
     }
 
     async function handleLogin() {
-      let email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      let pass = document.getElementById('loginPass').value.trim();
-      if (!email || !pass) { alert("Please enter email & password."); return; }
+      let emailInput = document.getElementById('loginEmail');
+      let passInput = document.getElementById('loginPass');
+      if (!emailInput || !passInput) { alert("Form elements not found!"); return; }
+
+      let email = emailInput.value.trim().toLowerCase();
+      let pass = passInput.value.trim();
+
+      if (!email || !pass) { 
+        alert("Please enter both email and password."); 
+        return; 
+      }
+
       let docId = email.replace(/[^a-zA-Z0-9]/g, "_");
 
       try {
@@ -778,7 +786,18 @@
 
         if (!docSnap.exists) {
           if (email === ADMIN_EMAIL && pass === "112211") {
-            currentUser = { email: email, pass: pass, totalBalance: 0, advBalance: 0, ptpEarnings: 0, offerEarnings: 0, taskEarnings: 0, tasks: 0, userId: "TM-ADMIN", referredBy: "" };
+            currentUser = { 
+              email: email, 
+              pass: pass, 
+              totalBalance: 0, 
+              advBalance: 0, 
+              ptpEarnings: 0, 
+              offerEarnings: 0, 
+              taskEarnings: 0, 
+              tasks: 0, 
+              userId: "TM-ADMIN", 
+              referredBy: "" 
+            };
             await docRef.set(currentUser);
           } else {
             alert("Account does not exist! Please register first.");
@@ -786,48 +805,85 @@
           }
         } else {
           let userData = docSnap.data();
-          if (userData.pass !== pass) { alert("Invalid Password!"); return; }
+          if (userData.pass !== pass) { 
+            alert("Invalid Password!"); 
+            return; 
+          }
           currentUser = userData;
           if (!currentUser.userId) {
             currentUser.userId = email === ADMIN_EMAIL ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
             await docRef.update({ userId: currentUser.userId });
           }
         }
+        
         localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
-        document.getElementById('auth-screen').style.display = 'none';
+        let authScreen = document.getElementById('auth-screen');
+        if (authScreen) authScreen.style.display = 'none';
         initUserSession();
-      } catch (err) { alert("Login error: " + err.message); }
+
+      } catch (err) { 
+        console.error("Login Error:", err);
+        alert("Login error: " + err.message); 
+      }
     }
 
     async function handleSignup() {
-      let email = document.getElementById('signupEmail').value.trim().toLowerCase();
-      let pass = document.getElementById('signupPass').value.trim();
-      let userCaptcha = parseInt(document.getElementById('signupCaptcha').value);
+      let emailInput = document.getElementById('signupEmail');
+      let passInput = document.getElementById('signupPass');
+      let captchaInput = document.getElementById('signupCaptcha');
+
+      if (!emailInput || !passInput || !captchaInput) { alert("Signup form elements missing!"); return; }
+
+      let email = emailInput.value.trim().toLowerCase();
+      let pass = passInput.value.trim();
+      let userCaptcha = parseInt(captchaInput.value);
 
       if (!email || !email.includes('@')) { alert("Valid Gmail required."); return; }
-      if (!pass || pass.length < 6) { alert("Password min 6 chars."); return; }
-      if (isNaN(userCaptcha) || userCaptcha !== correctCaptchaAnswer) { alert("Incorrect captcha."); return; }
+      if (!pass || pass.length < 6) { alert("Password must be at least 6 characters."); return; }
+      if (isNaN(userCaptcha) || userCaptcha !== correctCaptchaAnswer) { alert("Incorrect captcha answer."); return; }
 
       let docId = email.replace(/[^a-zA-Z0-9]/g, "_");
       try {
         let docRef = db.collection("users").doc(docId);
         let docSnap = await docRef.get();
-        if (docSnap.exists) { alert("Account already exists!"); switchAuthTab('login'); return; }
+        if (docSnap.exists) { 
+          alert("Account already exists! Please login."); 
+          switchAuthTab('login'); 
+          return; 
+        }
 
         let generatedUserId = email === ADMIN_EMAIL ? "TM-ADMIN" : "TM-" + Math.floor(1000 + Math.random() * 9000);
         let referredBy = localStorage.getItem('taskmint_ref') || "";
 
         currentUser = { 
-          email: email, pass: pass, totalBalance: 0, advBalance: 0, 
-          ptpEarnings: 0, ptpPaid: 0, offerEarnings: 0, offerPaid: 0, taskEarnings: 0, taskPaid: 0,
-          tasks: 0, userId: generatedUserId, referredBy: referredBy, completedTasks: []
+          email: email, 
+          pass: pass, 
+          totalBalance: 0, 
+          advBalance: 0, 
+          ptpEarnings: 0, 
+          ptpPaid: 0, 
+          offerEarnings: 0, 
+          offerPaid: 0, 
+          taskEarnings: 0, 
+          taskPaid: 0,
+          tasks: 0, 
+          userId: generatedUserId, 
+          referredBy: referredBy, 
+          completedTasks: []
         };
+
         await docRef.set(currentUser);
         localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
         alert("Account created successfully!");
-        document.getElementById('auth-screen').style.display = 'none';
+        
+        let authScreen = document.getElementById('auth-screen');
+        if (authScreen) authScreen.style.display = 'none';
         initUserSession();
-      } catch (err) { alert("Signup error: " + err.message); }
+
+      } catch (err) { 
+        console.error("Signup Error:", err);
+        alert("Signup error: " + err.message); 
+      }
     }
 
     async function initUserSession() {
@@ -1067,8 +1123,7 @@
       let container = document.getElementById('manualTaskList');
       if(container) container.innerHTML = html;
     }
-
-    async function openTaskSubmitModal(taskId, taskTitle, reward) {
+        async function openTaskSubmitModal(taskId, taskTitle, reward) {
       let proof = prompt(`Submit proof for "${taskTitle}" (e.g. Your username / screenshot link):`);
       if(!proof) return;
       await db.collection("task_proofs").add({
@@ -1080,22 +1135,6 @@
       });
       alert("Proof submitted successfully!");
     }
-
-    async function submitWithdrawal() {
-      let method = document.getElementById('wMethod').value;
-      let field1 = document.getElementById('wField1').value.trim();
-      let field2 = document.getElementById('wField2').value.trim();
-      let amount = parseFloat(document.getElementById('wAmount').value);
-
-      if (!field1 || !field2 || isNaN(amount)) { alert("Fill all details."); return; }
-      if (amount < 5) { alert("Minimum withdrawal is $5."); return; }
-      let currentBal = (parseFloat(currentUser.totalBalance) || 0) + (parseFloat(currentUser.taskPaid) || 0) + (parseFloat(currentUser.offerPaid) || 0) + (parseFloat(currentUser.ptpPaid) || 0);
-      if (currentBal < amount) { alert("Insufficient balance!"); return; }
-
-      currentUser.totalBalance = currentBal - amount;
-currentUser.taskPaid = 0; 
-currentUser.offerPaid = 0; 
-currentUser.ptpPaid = 0;
         async function submitWithdrawal() {
       let method = document.getElementById('wMethod').value;
       let field1 = document.getElementById('wField1').value.trim();
@@ -1108,9 +1147,7 @@ currentUser.ptpPaid = 0;
       if (currentBal < amount) { alert("Insufficient balance!"); return; }
 
       currentUser.totalBalance = currentBal - amount;
-      currentUser.taskPaid = 0; 
-      currentUser.offerPaid = 0; 
-      currentUser.ptpPaid = 0;
+      currentUser.taskPaid = 0; currentUser.offerPaid = 0; currentUser.ptpPaid = 0;
 
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
       await db.collection("users").doc(docId).update({ totalBalance: currentUser.totalBalance, taskPaid: 0, offerPaid: 0, ptpPaid: 0 });
@@ -1347,3 +1384,4 @@ currentUser.ptpPaid = 0;
   </script>
 </body>
 </html>
+  

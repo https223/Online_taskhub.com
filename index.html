@@ -51,8 +51,7 @@
       width: 100%; padding: 11px; background: var(--primary); color: #fff;
       border: none; border-radius: 10px; font-weight: 700; font-size: 0.88rem; cursor: pointer; margin-top: 10px;
     }
-
-    .sidebar {
+        .sidebar {
       width: 240px; background: var(--sidebar-bg); color: #fff;
       display: flex; flex-direction: column; justify-content: space-between;
       padding: 20px 14px; position: fixed; top: 0; bottom: 0; left: 0;
@@ -72,7 +71,8 @@
     }
     .nav-links a:hover { background: rgba(255,255,255,0.07); color: #fff; }
     .nav-links a.active { background: var(--sidebar-active); color: #fff; font-weight: 600; }
-        .main { flex: 1; margin-left: 240px; padding: 20px 24px; width: 100%; }
+
+    .main { flex: 1; margin-left: 240px; padding: 20px 24px; width: calc(100% - 240px); }
 
     .topbar {
       display: flex; justify-content: space-between; align-items: center;
@@ -80,15 +80,14 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 20px; border: 1px solid var(--border);
     }
     .topbar-left { display: flex; align-items: center; gap: 12px; }
-    .menu-btn { display: block; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text); }
+    .menu-btn { display: none; background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text); }
     .welcome { font-size: 0.95rem; font-weight: 600; }
     .topbar-right { display: flex; align-items: center; gap: 14px; }
     .avatar {
       width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
       color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
-    }
-
-    .stats-grid {
+      }
+        .stats-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;
     }
     .stat-card {
@@ -145,21 +144,32 @@
     .badge-approved { background: rgba(5, 150, 105, 0.2); color: #34d399; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
     .badge-rejected { background: rgba(220, 38, 38, 0.2); color: #f87171; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.75rem; }
 
+    .sub-modal-box {
+      display: none; background: #252525; border: 1px solid #3f3f46; border-radius: 12px; padding: 18px; margin-top: 14px;
+    }
+    .easypaisa-highlight {
+      background: linear-gradient(135deg, #064e3b, #047857); border: 1px solid #10b981; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 16px;
+    }
+    .easypaisa-highlight .ep-title { font-size: 0.9rem; color: #a7f3d0; font-weight: 700; }
+    .easypaisa-highlight .ep-number { font-size: 1.7rem; font-weight: 900; color: #ffffff; margin: 6px 0; direction: ltr; }
+    .easypaisa-highlight .ep-name { font-size: 1.05rem; color: #fef08a; font-weight: 700; }
+
     .page-section { display: none; }
     .page-section.active { display: block; }
-
     .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 150; }
     @media (max-width: 900px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
       .overlay.open { display: block; }
-      .main { margin-left: 0; padding: 14px; }
+      .main { margin-left: 0; padding: 14px; width: 100%; }
+      .menu-btn { display: block; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
 
+  <!-- Auth Screen -->
   <div id="auth-screen">
     <div class="auth-card">
       <h2>TaskMint Portal</h2>
@@ -202,6 +212,7 @@
 
   <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
+  <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div>
       <div class="brand"><i class="fa-solid fa-coins"></i> TaskMint</div>
@@ -222,7 +233,9 @@
       <button onclick="copyRef()" style="width: 100%; padding: 8px; border: none; border-radius: 8px; background: #6366f1; color: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer;">Copy Link</button>
     </div>
   </aside>
-    <main class="main">
+
+  <!-- Main Area -->
+  <main class="main">
     <div class="topbar">
       <div class="topbar-left">
         <button class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></button>
@@ -239,6 +252,7 @@
       <div><strong>Admin Broadcast:</strong> <span id="broadcastText">Welcome to TaskMint! Complete offers and earn real cash.</span></div>
     </div>
 
+    <!-- Dashboard -->
     <div id="dashboard" class="page-section active">
       <div class="stats-grid">
         <div class="stat-card">
@@ -275,7 +289,7 @@
         </div>
       </div>
     </div>
-
+        <!-- Tasks (PTP) -->
     <div id="tasks" class="page-section">
       <div class="card" style="text-align: center; padding: 30px 20px;">
         <div class="card-header" style="justify-content: center;"><h3><i class="fa-solid fa-list-check" style="color: var(--primary);"></i> Live PTP Traffic Link</h3></div>
@@ -284,6 +298,7 @@
       </div>
     </div>
 
+    <!-- Manual Tasks -->
     <div id="manual-tasks" class="page-section">
       <div class="card">
         <div class="card-header"><h3><i class="fa-solid fa-tasks" style="color: var(--primary);"></i> Available Manual Tasks</h3></div>
@@ -292,40 +307,87 @@
       </div>
     </div>
 
+    <!-- Offers (Offerwall Iframe with Responsive Device Guide) -->
     <div id="offers" class="page-section">
-      <div class="card" style="padding: 14px; height: 82vh; display: flex; flex-direction: column;">
-        <div class="card-header" style="margin-bottom: 8px;">
+      <div class="card" style="padding: 14px; display: flex; flex-direction: column;">
+        <div class="card-header" style="margin-bottom: 6px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <h3><i class="fa-solid fa-gift" style="color: var(--primary);"></i> High-Paying Surveys & Offerwall</h3>
+          <div style="font-size: 0.78rem; background: rgba(91,70,246,0.15); border: 1px solid var(--primary); color: #a78bfa; padding: 4px 10px; border-radius: 6px;">
+            <i class="fa-solid fa-circle-info"></i> Auto-matches Android, iOS & Desktop tasks based on your device!
+          </div>
         </div>
-        <iframe id="offerwalliframe" src="" style="width: 100%; flex: 1; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
+        <iframe id="offerwalliframe" src="" style="width: 100%; height: 75vh; border: none; border-radius: 10px; background: #ffffff;" scrolling="yes"></iframe>
       </div>
     </div>
-        <div id="advertiser" class="page-section">
-      <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green); display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h4 style="color:#34d399; margin-bottom:4px;"><i class="fa-solid fa-wallet"></i> Advertiser Wallet Balance</h4>
-          <p style="font-size:0.85rem; color:var(--muted);">Use this balance to create campaigns (Min Budget: $0.05)</p>
+
+    <!-- Advertiser Hub -->
+    <div id="advertiser" class="page-section">
+      <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h4 style="color:#34d399; margin-bottom:4px;"><i class="fa-solid fa-wallet"></i> Advertiser Wallet Balance</h4>
+            <p style="font-size:0.85rem; color:var(--muted);">Use this balance to create campaigns (Min Budget: $0.05)</p>
+          </div>
+          <div id="advWalletBalance" style="font-size:1.6rem; font-weight:800; color:#fff;">$0.00</div>
         </div>
-        <div id="advWalletBalance" style="font-size:1.4rem; font-weight:800; color:#fff;">$0.00</div>
+
+        <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
+          <button class="action-btn" onclick="toggleAdvModal('transferBox')" style="background: var(--primary); padding: 10px 18px; font-size: 0.88rem;">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i> Transfer from Main Wallet
+          </button>
+          <button class="action-btn" onclick="toggleAdvModal('depositBox')" style="background: var(--green); padding: 10px 18px; font-size: 0.88rem;">
+            <i class="fa-solid fa-plus-circle"></i> Deposit Funds
+          </button>
+        </div>
+
+        <!-- Transfer Box -->
+        <div id="transferBox" class="sub-modal-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h4 style="color:#a78bfa;"><i class="fa-solid fa-wallet"></i> Transfer Main Balance to Advertiser Wallet</h4>
+            <button onclick="toggleAdvModal('transferBox')" style="background:none; border:none; color:#aaa; cursor:pointer; font-size:1.1rem;">&times;</button>
+          </div>
+          <p style="font-size:0.82rem; color:var(--muted); margin-bottom:10px;">
+            Available Main Wallet Balance: <strong id="availableMainBalText" style="color:#34d399;">$0.00</strong>
+          </p>
+          <div class="form-group">
+            <label>Enter Amount to Transfer ($ USD)</label>
+            <input type="number" step="any" id="transferAmountInput" class="form-control" placeholder="e.g. 1.00" />
+          </div>
+          <button class="action-btn" onclick="confirmWalletTransfer()" style="background: var(--primary); width: 100%; padding: 10px;">
+            <i class="fa-solid fa-check"></i> Confirm Transfer
+          </button>
+        </div>
+
+        <!-- Deposit Box -->
+        <div id="depositBox" class="sub-modal-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="color:#34d399;"><i class="fa-solid fa-money-bill-wave"></i> Deposit via EasyPaisa</h4>
+            <button onclick="toggleAdvModal('depositBox')" style="background:none; border:none; color:#aaa; cursor:pointer; font-size:1.1rem;">&times;</button>
+          </div>
+
+          <div class="easypaisa-highlight">
+            <div class="ep-title">EASYPAISA ACCOUNT DETAILS</div>
+            <div class="ep-number">03176776279</div>
+            <div class="ep-name">Account Name: Amenah bibi</div>
+            <div style="font-size: 0.78rem; color: #d1fae5; margin-top: 6px;">Rate: 280 PKR = $1.00 USD</div>
+          </div>
+
+          <div class="form-group">
+            <label>Amount Sent in PKR (e.g. 1400 PKR = $5)</label>
+            <input type="number" id="depPkr" class="form-control" placeholder="1400" />
+          </div>
+          <div class="form-group">
+            <label>Upload Payment Screenshot or Enter Trx ID</label>
+            <input type="file" id="depScreenshotFile" accept="image/*" class="form-control" style="margin-bottom: 6px;" />
+            <input type="text" id="depProof" class="form-control" placeholder="Or paste Screenshot Link / Transaction ID" />
+          </div>
+          <button class="action-btn" onclick="submitDeposit()" style="background:var(--green); width: 100%; padding: 10px;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Deposit & Screenshot
+          </button>
+        </div>
       </div>
 
-      <div class="card" style="background: rgba(30, 41, 59, 0.5); border: 1px solid #334155;">
-        <div class="card-header"><h3><i class="fa-solid fa-money-bill-transfer" style="color: var(--primary);"></i> Deposit Funds (EasyPaisa)</h3></div>
-        <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 12px;">
-          <i class="fa-solid fa-circle-info" style="color:#fbbf24;"></i> Send payment to EasyPaisa Account: <strong>03176776279</strong> (Name: <strong>Amenah bibi</strong>).<br>
-          Rate: <strong>280 PKR = $1.00</strong>. Send money and upload screenshot proof or Transaction ID below.
-        </p>
-        <div class="form-group">
-          <label>Deposit Amount in PKR (e.g. 1400 PKR = $5)</label>
-          <input type="number" id="depPkr" class="form-control" placeholder="1400" />
-        </div>
-        <div class="form-group">
-          <label>Transaction ID / Screenshot Link / Details</label>
-          <input type="text" id="depProof" class="form-control" placeholder="Trx ID or Screenshot URL" />
-        </div>
-        <button class="action-btn" onclick="submitDeposit()" style="background:var(--green);">Submit Deposit Request</button>
-      </div>
-
+      <!-- Create Campaign -->
       <div class="card">
         <div class="card-header"><h3><i class="fa-solid fa-bullhorn" style="color: var(--primary);"></i> Create Task Campaign</h3></div>
         <div class="form-group">
@@ -366,6 +428,7 @@
         </div>
         <button class="action-btn" onclick="submitCampaign()">Launch Campaign (Pending Admin Approval)</button>
       </div>
+      
       <div class="card">
         <div class="card-header"><h3>Your Campaigns History</h3></div>
         <div class="table-responsive">
@@ -385,6 +448,7 @@
       </div>
     </div>
 
+    <!-- Withdraw Section -->
     <div id="withdraw" class="page-section">
       <div class="card" style="background: rgba(49, 46, 129, 0.2); border: 1px solid #4338ca; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 12px;">
         <div>
@@ -437,6 +501,7 @@
       </div>
     </div>
 
+    <!-- Support Section -->
     <div id="support" class="page-section">
       <div class="card">
         <div class="card-header"><h3>Support & Messages</h3></div>
@@ -447,8 +512,9 @@
         <button class="action-btn" onclick="sendSupportMessage()">Send Message</button>
         <div id="userSupportHistory" style="margin-top: 20px;"></div>
       </div>
-  </div>
-                <div id="admin-panel" class="page-section">
+          </div>
+              <!-- Admin Master Panel -->
+    <div id="admin-panel" class="page-section">
       <div class="card" style="background: #1e1b4b; color: #fff;">
         <h2><i class="fa-solid fa-shield-halved"></i> Admin Master Dashboard</h2>
         <p style="font-size:0.85rem; color:#cbd5e1;">Manage user IP, Deposits, Campaigns & Payments: mf3767189@gmail.com</p>
@@ -469,7 +535,7 @@
                 <th>User</th>
                 <th>PKR Amount</th>
                 <th>USD Value ($)</th>
-                <th>Proof</th>
+                <th>Proof / Screenshot</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -501,17 +567,17 @@
       </div>
 
       <div class="card">
-        <div class="card-header"><h3>Advertiser Campaigns Approval Control</h3></div>
+        <div class="card-header"><h3>Advertiser Campaigns Approval Control (Custom Edit & Publish)</h3></div>
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
                 <th>User</th>
                 <th>Category</th>
-                <th>Title</th>
+                <th>Title / Target</th>
                 <th>Qty / Budget</th>
                 <th>Status</th>
-                <th>Action</th>
+                <th>Admin Custom Action</th>
               </tr>
             </thead>
             <tbody id="adminCampaignsTable"></tbody>
@@ -562,7 +628,8 @@
       </div>
     </div>
   </main>
-    <script>
+    <!-- JavaScript Logic -->
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCHmjnhNRtqv8at1IzW...",
       authDomain: "online-taskhub.firebaseapp.com",
@@ -618,7 +685,63 @@
       return num.toFixed(4).replace(/\.?0+$/, "");
     }
 
-    // Fixed Offerwall Signature Handler
+    function toggleAdvModal(boxId) {
+      const tBox = document.getElementById('transferBox');
+      const dBox = document.getElementById('depositBox');
+      if (boxId === 'transferBox') {
+        dBox.style.display = 'none';
+        tBox.style.display = tBox.style.display === 'block' ? 'none' : 'block';
+      } else if (boxId === 'depositBox') {
+        tBox.style.display = 'none';
+        dBox.style.display = dBox.style.display === 'block' ? 'none' : 'block';
+      }
+    }
+
+    async function confirmWalletTransfer() {
+      let amount = parseFloat(document.getElementById('transferAmountInput').value);
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount to transfer.");
+        return;
+      }
+
+      let currentMainBal = (parseFloat(currentUser.taskPaid) || 0) + 
+                           (parseFloat(currentUser.offerPaid) || 0) + 
+                           (parseFloat(currentUser.ptpPaid) || 0) + 
+                           (parseFloat(currentUser.totalBalance) || 0);
+
+      if (amount > currentMainBal) {
+        alert("Insufficient balance in your Main Wallet!");
+        return;
+      }
+
+      let remainingMainBal = currentMainBal - amount;
+      let newAdvBal = (parseFloat(currentUser.advBalance) || 0) + amount;
+
+      currentUser.totalBalance = remainingMainBal;
+      currentUser.taskPaid = 0;
+      currentUser.offerPaid = 0;
+      currentUser.ptpPaid = 0;
+      currentUser.advBalance = newAdvBal;
+
+      let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
+      try {
+        await db.collection("users").doc(docId).update({
+          totalBalance: remainingMainBal,
+          taskPaid: 0,
+          offerPaid: 0,
+          ptpPaid: 0,
+          advBalance: newAdvBal
+        });
+        localStorage.setItem('taskmint_user', JSON.stringify(currentUser));
+        document.getElementById('transferAmountInput').value = '';
+        toggleAdvModal('transferBox');
+        alert(`$${formatMoney(amount)} successfully transferred to your Advertiser Wallet!`);
+        initUserSession();
+      } catch (err) {
+        alert("Transfer error: " + err.message);
+      }
+    }
+
     async function loadOfferwall() {
       let userId = 'TM-1000';
       try {
@@ -632,7 +755,7 @@
       } catch(e) {}
 
       try {
-        let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev?userId=${userId}`);
+        let res = await fetch(`https://aged-thunder-1167.mf3767189.workers.dev/sign?uid=${userId}`);
         let data = await res.json();
         if (data.url) {
           let iframe = document.getElementById('offerwalliframe');
@@ -714,19 +837,7 @@
         let res = await fetch('https://api.ipify.org?format=json');
         let data = await res.json();
         if(data && data.ip) ip = data.ip;
-      } catch (e) {
-        try {
-          let res2 = await fetch('https://ipapi.co/json/');
-          let data2 = await res2.json();
-          if(data2 && data2.ip) ip = data2.ip;
-        } catch(err) {
-          try {
-            let res3 = await fetch('https://icanhazip.com/');
-            let ipText = await res3.text();
-            if(ipText) ip = ipText.trim();
-          } catch(err2) {}
-        }
-      }
+      } catch (e) {}
 
       let userRef = db.collection("users").doc(docId);
       await userRef.update({ 
@@ -748,11 +859,12 @@
       document.getElementById('userAvatar').innerText = currentUser.userId ? currentUser.userId.substring(0,2) : "TM";
       
       document.getElementById('dashTotalBalance').innerText = `$${formatMoney(calculatedBalance)}`;
+      document.getElementById('availableMainBalText').innerText = `$${formatMoney(calculatedBalance)}`;
       document.getElementById('dashPtpEarn').innerText = `$${formatMoney(currentUser.ptpEarnings || currentUser.ptpPaid || 0)}`;
       document.getElementById('dashOfferEarn').innerText = `$${formatMoney(currentUser.offerEarnings || currentUser.offerPaid || 0)}`;
       document.getElementById('advWalletBalance').innerText = `$${formatMoney(currentUser.advBalance || 0)}`;
 
-            try {
+      try {
         let refSnap = await db.collection("users").where("referredBy", "==", currentUser.userId).get();
         document.getElementById('dashRefCount').innerText = refSnap.size;
         let totalComm = 0;
@@ -767,7 +879,6 @@
           currentUser.referralCommissionPaid = totalComm;
           currentUser.totalBalance = (parseFloat(currentUser.totalBalance) || 0) + totalComm;
           
-          let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
           await db.collection("users").doc(docId).update({
             totalBalance: currentUser.totalBalance,
             referralCommissionPaid: totalComm
@@ -777,8 +888,7 @@
       } catch(e) {
         document.getElementById('dashRefCount').innerText = 0;
         document.getElementById('dashRefCommission').innerText = `$0.00`;
-            }
-      
+      }
 
       document.getElementById('refInput').value = `https://https223.github.io/Online_taskhub.com/?ref=${currentUser.userId}`;
 
@@ -826,22 +936,48 @@
 
     async function submitDeposit() {
       let pkr = parseFloat(document.getElementById('depPkr').value);
-      let proof = document.getElementById('depProof').value.trim();
-      if(isNaN(pkr) || pkr <= 0 || !proof) { alert("Enter valid PKR amount and proof."); return; }
+      let proofText = document.getElementById('depProof').value.trim();
+      let fileInput = document.getElementById('depScreenshotFile');
+
+      if (isNaN(pkr) || pkr <= 0) {
+        alert("Please enter a valid PKR amount.");
+        return;
+      }
+
+      if (!proofText && (!fileInput.files || fileInput.files.length === 0)) {
+        alert("Please upload a screenshot or enter Transaction ID.");
+        return;
+      }
+
       let usdVal = pkr / PKR_USD_RATE;
 
-      await db.collection("deposits").add({
-        email: currentUser.email,
-        userId: currentUser.userId,
-        pkr,
-        usdVal,
-        proof,
-        status: 'Pending',
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      alert("Deposit request submitted to Admin!");
-      document.getElementById('depPkr').value = '';
-      document.getElementById('depProof').value = '';
+      const saveDepositRecord = async (finalProof) => {
+        await db.collection("deposits").add({
+          email: currentUser.email,
+          userId: currentUser.userId,
+          pkr,
+          usdVal,
+          proof: finalProof,
+          status: 'Pending',
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Deposit request & screenshot submitted to Admin!");
+        document.getElementById('depPkr').value = '';
+        document.getElementById('depProof').value = '';
+        fileInput.value = '';
+        toggleAdvModal('depositBox');
+      };
+
+      if (fileInput.files && fileInput.files[0]) {
+        let reader = new FileReader();
+        reader.onload = async function(e) {
+          let base64Img = e.target.result;
+          await saveDepositRecord(base64Img);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        await saveDepositRecord(proofText);
+      }
     }
 
     async function submitCampaign() {
@@ -856,7 +992,7 @@
         return;
       }
       if((currentUser.advBalance || 0) < budget) {
-        alert("Insufficient Advertiser Balance! Please deposit funds first.");
+        alert("Insufficient Advertiser Balance! Please deposit or transfer funds first.");
         return;
       }
 
@@ -957,7 +1093,24 @@
       if (currentBal < amount) { alert("Insufficient balance!"); return; }
 
       currentUser.totalBalance = currentBal - amount;
-      currentUser.taskPaid = 0; currentUser.offerPaid = 0; currentUser.ptpPaid = 0;
+currentUser.taskPaid = 0; 
+currentUser.offerPaid = 0; 
+currentUser.ptpPaid = 0;
+        async function submitWithdrawal() {
+      let method = document.getElementById('wMethod').value;
+      let field1 = document.getElementById('wField1').value.trim();
+      let field2 = document.getElementById('wField2').value.trim();
+      let amount = parseFloat(document.getElementById('wAmount').value);
+
+      if (!field1 || !field2 || isNaN(amount)) { alert("Fill all details."); return; }
+      if (amount < 5) { alert("Minimum withdrawal is $5."); return; }
+      let currentBal = (parseFloat(currentUser.totalBalance) || 0) + (parseFloat(currentUser.taskPaid) || 0) + (parseFloat(currentUser.offerPaid) || 0) + (parseFloat(currentUser.ptpPaid) || 0);
+      if (currentBal < amount) { alert("Insufficient balance!"); return; }
+
+      currentUser.totalBalance = currentBal - amount;
+      currentUser.taskPaid = 0; 
+      currentUser.offerPaid = 0; 
+      currentUser.ptpPaid = 0;
 
       let docId = currentUser.email.replace(/[^a-zA-Z0-9]/g, "_");
       await db.collection("users").doc(docId).update({ totalBalance: currentUser.totalBalance, taskPaid: 0, offerPaid: 0, ptpPaid: 0 });
@@ -991,29 +1144,6 @@
       alert("Message sent!");
       loadSupportHistory();
     }
-    async function loadUserWithdrawHistory() {
-      let html = '';
-      try {
-        let snapshot = await db.collection("withdraws").where("email", "==", currentUser.email).get();
-        if (snapshot.empty) { html = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No history</td></tr>`; }
-        else {
-          snapshot.forEach(doc => {
-            let r = doc.data();
-            html += `<tr><td>${r.method}</td><td>${r.field1}</td><td style="color:var(--red);">-$${r.amount}</td><td><span class="badge-${r.status.toLowerCase()}">${r.status}</span></td></tr>`;
-          });
-        }
-      } catch(e) {}
-      document.getElementById('userWithdrawHistory').innerHTML = html;
-    }
-
-    async function sendSupportMessage() {
-      let text = document.getElementById('msgText').value.trim();
-      if (!text) return;
-      await db.collection("support").add({ email: currentUser.email, userId: currentUser.userId, text, reply: '', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-      document.getElementById('msgText').value = '';
-      alert("Message sent!");
-      loadSupportHistory();
-    }
 
     async function loadSupportHistory() {
       let html = '<h4>Your Support Tickets</h4>';
@@ -1024,7 +1154,8 @@
           html += `<div style="background:#252525; padding:10px; border-radius:8px; margin-top:8px; font-size:0.85rem; border:1px solid var(--border);"><strong>You:</strong> ${m.text}<br><strong style="color:var(--green);">Admin:</strong> ${m.reply || 'Waiting...'}</div>`;
         });
       } catch(e) {}
-      document.getElementById('userSupportHistory').innerHTML = html;
+      let supportElem = document.getElementById('userSupportHistory');
+      if(supportElem) supportElem.innerHTML = html;
     }
 
     async function loadBroadcast() {
@@ -1035,100 +1166,136 @@
     }
 
     async function loadAdminPanelData() {
-      let uHtml = '';
-      let usersSnap = await db.collection("users").get();
-      usersSnap.forEach(doc => {
-        let u = doc.data();
-        let targetDocId = doc.id;
-        let tasksDone = (u.completedTasks || []).length || u.tasks || 0;
-        let isActive = false;
-        if (u.lastLogin) { if ((new Date().getTime() - u.lastLogin.toDate().getTime()) < 10*60*1000) isActive = true; }
-        let statusBadge = isActive ? '<span class="badge-approved" style="font-size:10px;">Active</span>' : '<span style="color:#aaa; font-size:10px;">Offline</span>';
+      try {
+        let uHtml = '';
+        let usersSnap = await db.collection("users").get();
+        usersSnap.forEach(doc => {
+          let u = doc.data();
+          let targetDocId = doc.id;
+          let tasksDone = (u.completedTasks || []).length || u.tasks || 0;
+          let isActive = false;
+          if (u.lastLogin) { if ((new Date().getTime() - u.lastLogin.toDate().getTime()) < 10*60*1000) isActive = true; }
+          let statusBadge = isActive ? '<span class="badge-approved" style="font-size:10px;">Active</span>' : '<span style="color:#aaa; font-size:10px;">Offline</span>';
 
-        uHtml += `<tr>
-          <td><b>${u.email}</b><br>${statusBadge}</td>
-          <td style="font-family:monospace; font-size:11px;">${u.ip || 'Unknown'}</td>
-          <td><b>${tasksDone}</b></td>
-          <td>$${formatMoney(u.offerPaid || 0)}</td>
-          <td>$${formatMoney(u.ptpPaid || 0)}</td>
-          <td><b>$${formatMoney((parseFloat(u.totalBalance)||0)+(parseFloat(u.taskPaid)||0)+(parseFloat(u.offerPaid)||0)+(parseFloat(u.ptpPaid)||0))}</b></td>
-          <td>
-            <input type="number" step="any" id="payTask_${targetDocId}" value="${u.taskPaid || 0}" class="form-control" style="width:70px; padding:2px; font-size:11px; margin-bottom:2px;" />
-            <input type="number" step="any" id="payOffer_${targetDocId}" value="${u.offerPaid || 0}" class="form-control" style="width:70px; padding:2px; font-size:11px; margin-bottom:2px;" />
-            <input type="number" step="any" id="payPtp_${targetDocId}" value="${u.ptpPaid || 0}" class="form-control" style="width:70px; padding:2px; font-size:11px;" />
-          </td>
-          <td><button class="action-btn" onclick="saveUserPayments('${targetDocId}')" style="background:var(--green); padding:4px 8px; font-size:11px;">Save</button></td>
-        </tr>`;
-      });
-      let usersTableElem = document.getElementById('adminUsersTable');
-      if(usersTableElem) usersTableElem.innerHTML = uHtml;
+          uHtml += `<tr>
+            <td><b>${u.email}</b><br>${statusBadge}</td>
+            <td style="font-family:monospace; font-size:11px;">${u.ip || 'Unknown'}</td>
+            <td><b>${tasksDone}</b></td>
+            <td>$${formatMoney(u.offerPaid || 0)}</td>
+            <td>$${formatMoney(u.ptpPaid || 0)}</td>
+            <td><b>$${formatMoney((parseFloat(u.totalBalance)||0)+(parseFloat(u.taskPaid)||0)+(parseFloat(u.offerPaid)||0)+(parseFloat(u.ptpPaid)||0))}</b></td>
+            <td>
+              <input type="number" step="any" id="payTask_${targetDocId}" value="${u.taskPaid || 0}" class="form-control" style="width:70px; padding:2px; font-size:11px; margin-bottom:2px;" />
+              <input type="number" step="any" id="payOffer_${targetDocId}" value="${u.offerPaid || 0}" class="form-control" style="width:70px; padding:2px; font-size:11px; margin-bottom:2px;" />
+              <input type="number" step="any" id="payPtp_${targetDocId}" value="${u.ptpPaid || 0}" class="form-control" style="width:70px; padding:2px; font-size:11px;" />
+            </td>
+            <td><button class="action-btn" onclick="saveUserPayments('${targetDocId}')" style="background:var(--green); padding:4px 8px; font-size:11px;">Save</button></td>
+          </tr>`;
+        });
+        let usersTableElem = document.getElementById('adminUsersTable');
+        if(usersTableElem) usersTableElem.innerHTML = uHtml;
 
-      let dHtml = '';
-      let dSnap = await db.collection("deposits").get();
-      dSnap.forEach(doc => {
-        let dep = doc.data();
-        let depId = doc.id;
-        dHtml += `<tr>
-          <td>${dep.userId || dep.email}</td>
-          <td>${dep.pkr} PKR</td>
-          <td style="color:#34d399; font-weight:750;">$${formatMoney(dep.usdVal)}</td>
-          <td style="font-size:11px;">${dep.proof}</td>
-          <td><span class="badge-${dep.status.toLowerCase()}">${dep.status}</span></td>
-          <td>
-            ${dep.status === 'Pending' ? `<button onclick="approveDeposit('${depId}', '${dep.email}', ${dep.usdVal})" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>` : 'Done'}
-          </td>
-        </tr>`;
-      });
-      let depTableElem = document.getElementById('adminDepositTable');
-      if(depTableElem) depTableElem.innerHTML = dHtml;
+        let dHtml = '';
+        let dSnap = await db.collection("deposits").get();
+        dSnap.forEach(doc => {
+          let dep = doc.data();
+          let depId = doc.id;
+          let proofDisplay = dep.proof && dep.proof.startsWith("data:image") 
+            ? `<a href="${dep.proof}" target="_blank" style="color:#60a5fa; text-decoration:underline;">View Screenshot</a>` 
+            : dep.proof;
 
-      let cHtml = '';
-      let cSnap = await db.collection("campaigns").get();
-      cSnap.forEach(doc => {
-        let camp = doc.data();
-        let campId = doc.id;
-        cHtml += `<tr>
-          <td>${camp.userId || camp.email}</td>
-          <td>${camp.category}</td>
-          <td>${camp.title}</td>
-          <td>Qty: ${camp.quantity} | $${formatMoney(camp.budget)}</td>
-          <td><span class="badge-${camp.status.toLowerCase()}">${camp.status}</span></td>
-          <td>
-            ${camp.status === 'Pending' ? `<button onclick="changeCampStatus('${campId}', 'Active')" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>` : ''}
-            <button onclick="deleteCampaign('${campId}')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; margin-left:4px;">Remove</button>
-          </td>
-        </tr>`;
-      });
-      let campTableElem = document.getElementById('adminCampaignsTable');
-      if(campTableElem) campTableElem.innerHTML = cHtml;
+          dHtml += `<tr>
+            <td>${dep.userId || dep.email}</td>
+            <td>${dep.pkr} PKR</td>
+            <td style="color:#34d399; font-weight:750;">$${formatMoney(dep.usdVal)}</td>
+            <td style="font-size:11px;">${proofDisplay}</td>
+            <td><span class="badge-${dep.status.toLowerCase()}">${dep.status}</span></td>
+            <td>
+              ${dep.status === 'Pending' ? `<button onclick="approveDeposit('${depId}', '${dep.email}', ${dep.usdVal})" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>` : 'Done'}
+            </td>
+          </tr>`;
+        });
+        let depTableElem = document.getElementById('adminDepositTable');
+        if(depTableElem) depTableElem.innerHTML = dHtml;
 
-      let pHtml = '';
-      let pSnap = await db.collection("task_proofs").get();
-      pSnap.forEach(doc => {
-        let proof = doc.data();
-        let proofId = doc.id;
-        pHtml += `<tr>
-          <td>${proof.userId}</td>
-          <td>${proof.taskTitle}</td>
-          <td style="font-size:11px;">${proof.proof}</td>
-          <td><span class="badge-${proof.status.toLowerCase()}">${proof.status}</span></td>
-          <td>
-            ${proof.status === 'Pending' ? `<button onclick="approveTaskProof('${proofId}', '${proof.userEmail}', ${proof.reward})" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>` : 'Done'}
-          </td>
-        </tr>`;
-      });
-      let proofTableElem = document.getElementById('adminTaskProofsTable');
-      if(proofTableElem) proofTableElem.innerHTML = pHtml;
+        let cHtml = '';
+        let cSnap = await db.collection("campaigns").get();
+        cSnap.forEach(doc => {
+          let camp = doc.data();
+          let campId = doc.id;
+          cHtml += `<tr>
+            <td>${camp.userId || camp.email}</td>
+            <td>${camp.category}</td>
+            <td>
+              <input type="text" id="adminCampTitle_${campId}" value="${camp.title}" class="form-control" style="font-size:11px; margin-bottom:4px;" />
+              <input type="text" id="adminCampUrl_${campId}" value="${camp.url}" class="form-control" style="font-size:11px;" />
+            </td>
+            <td>
+              Qty: <input type="number" id="adminCampQty_${campId}" value="${camp.quantity}" class="form-control" style="width:60px; display:inline-block; font-size:11px; margin-bottom:4px;" /><br>
+              Budget ($): <input type="number" step="any" id="adminCampBudget_${campId}" value="${camp.budget}" class="form-control" style="width:70px; display:inline-block; font-size:11px;" />
+            </td>
+            <td><span class="badge-${camp.status.toLowerCase()}">${camp.status}</span></td>
+            <td>
+              ${camp.status === 'Pending' ? `<button onclick="approveAndPublishCampaign('${campId}')" style="background:var(--green); color:#fff; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:700; margin-bottom:4px; display:block;">Approve & Publish</button>` : ''}
+              <button onclick="deleteCampaign('${campId}')" style="background:var(--red); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Remove</button>
+            </td>
+          </tr>`;
+        });
+        let campTableElem = document.getElementById('adminCampaignsTable');
+        if(campTableElem) campTableElem.innerHTML = cHtml;
 
-      let wHtml = '';
-      let wSnap = await db.collection("withdraws").get();
-      wSnap.forEach(doc => {
-        let req = doc.data();
-        let docId = doc.id;
-        wHtml += `<tr><td>${req.email}</td><td>${req.method}</td><td>${req.field1}</td><td style="color:var(--red);">-$${req.amount}</td><td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td><td><button onclick="changeWithdrawStatus('${docId}', 'Approved')" style="background:var(--green); color:#fff; border:none; padding:4px; border-radius:4px;">Approve</button></td></tr>`;
+        let pHtml = '';
+        let pSnap = await db.collection("task_proofs").get();
+        pSnap.forEach(doc => {
+          let proof = doc.data();
+          let proofId = doc.id;
+          pHtml += `<tr>
+            <td>${proof.userId}</td>
+            <td>${proof.taskTitle}</td>
+            <td style="font-size:11px;">${proof.proof}</td>
+            <td><span class="badge-${proof.status.toLowerCase()}">${proof.status}</span></td>
+            <td>
+              ${proof.status === 'Pending' ? `<button onclick="approveTaskProof('${proofId}', '${proof.userEmail}', ${proof.reward})" style="background:var(--green); color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Approve</button>` : 'Done'}
+            </td>
+          </tr>`;
+        });
+        let proofTableElem = document.getElementById('adminTaskProofsTable');
+        if(proofTableElem) proofTableElem.innerHTML = pHtml;
+
+        let wHtml = '';
+        let wSnap = await db.collection("withdraws").get();
+        wSnap.forEach(doc => {
+          let req = doc.data();
+          let docId = doc.id;
+          wHtml += `<tr><td>${req.email}</td><td>${req.method}</td><td>${req.field1}</td><td style="color:var(--red);">-$${req.amount}</td><td><span class="badge-${req.status.toLowerCase()}">${req.status}</span></td><td><button onclick="changeWithdrawStatus('${docId}', 'Approved')" style="background:var(--green); color:#fff; border:none; padding:4px; border-radius:4px;">Approve</button></td></tr>`;
+        });
+        let withdrawTableElem = document.getElementById('adminWithdrawTable');
+        if(withdrawTableElem) withdrawTableElem.innerHTML = wHtml;
+
+      } catch(e) { console.error("Admin Panel Error:", e); }
+    }
+
+    async function approveAndPublishCampaign(campId) {
+      let newTitle = document.getElementById(`adminCampTitle_${campId}`).value.trim();
+      let newUrl = document.getElementById(`adminCampUrl_${campId}`).value.trim();
+      let newQty = parseInt(document.getElementById(`adminCampQty_${campId}`).value);
+      let newBudget = parseFloat(document.getElementById(`adminCampBudget_${campId}`).value);
+
+      if(!newTitle || !newUrl || isNaN(newQty) || isNaN(newBudget)) {
+        alert("Please enter valid title, URL, quantity and budget.");
+        return;
+      }
+
+      await db.collection("campaigns").doc(campId).update({
+        title: newTitle,
+        url: newUrl,
+        quantity: newQty,
+        budget: newBudget,
+        status: 'Active'
       });
-      let withdrawTableElem = document.getElementById('adminWithdrawTable');
-      if(withdrawTableElem) withdrawTableElem.innerHTML = wHtml;
+
+      alert("Campaign updated, approved, and set Live successfully!");
+      loadAdminPanelData();
     }
 
     async function approveDeposit(depId, userEmail, usdVal) {
@@ -1142,12 +1309,6 @@
       }
       loadAdminPanelData();
       alert("Deposit approved and balance added to Advertiser wallet!");
-    }
-
-    async function changeCampStatus(campId, status) {
-      await db.collection("campaigns").doc(campId).update({ status: status });
-      loadAdminPanelData();
-      alert("Campaign approved and set Live!");
     }
 
     async function saveUserPayments(targetDocId) {
@@ -1186,4 +1347,3 @@
   </script>
 </body>
 </html>
-  
